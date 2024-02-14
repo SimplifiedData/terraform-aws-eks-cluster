@@ -1,0 +1,109 @@
+redis-ha.enabled: true
+
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: ${ingress_certs_arn}
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/load-balancer-name: ${ingress_name}
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/ssl-policy: ${ingress_ssl_policy}
+      alb.ingress.kubernetes.io/subnets: ${ingress_subnets}
+      alb.ingress.kubernetes.io/tags: ${ingress_tags}
+      alb.ingress.kubernetes.io/target-type: ip
+    enabled: ${ingress_enabled}
+  ingressGrpc:
+    enabled: ${ingress_grpc_enabled}
+    awsALB:
+      serviceType: ClusterIP
+    isAWSALB: true
+  metrics:
+    enabled: ${server_metrics_enabled}
+global:
+  logging.format: ${global_log_format}
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+controller:
+  enableStatefulSet: true
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+dex:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+redis:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+applicationSet:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+notifications:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"

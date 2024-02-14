@@ -1,0 +1,5 @@
+replicas: ${replicas}
+controller:
+  resources:
+    requests:
+      cpu:  ${requests_cpu}
