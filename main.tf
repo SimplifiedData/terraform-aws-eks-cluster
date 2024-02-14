@@ -36,7 +36,10 @@ locals {
 
   cluster_version = 1.28
   ingress_ssl_policy = "ELBSecurityPolicy-TLS13-1-3-2021-06"
+  
+  #============================================
   ## ADDON Version
+  #============================================
   karpenter = {
     version = "v0.31.2"
   }
@@ -71,7 +74,9 @@ locals {
   #___________________________________
 }
 
-## Get Subnet ID and VPC
+#============================================
+# Get Subnet ID and VPC
+#============================================
 data "aws_eks_cluster_auth" "this" {
   name = module.eks.cluster_name
 }
@@ -94,7 +99,9 @@ data "aws_subnets" "nonexpose" {
   }
 }
 
-## Get Authen Token ECR public
+#============================================
+## Get Authen Token ECR public              #
+#============================================
 provider "aws" {
   region = "us-east-1"
   alias  = "virginia"
@@ -108,7 +115,9 @@ resource "random_string" "default" {
   upper   = false
 }
 
-# Module EKS Cluster
+#============================================
+# Module EKS Cluster                        #
+#============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
@@ -179,16 +188,79 @@ module "eks" {
   })
 }
 
-module "ebs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+#============================================
+# Tag VPC, Tested on awscli 2.9.8           #
+#============================================
+resource "null_resource" "vpc_lz" {
+  lifecycle {
+    create_before_destroy = true
+  }
 
-  role_name             = "${module.eks.cluster_name}-ebs-csi"
-  attach_ebs_csi_policy = true
+  triggers = {
+    cluster_name = var.cluster_name
+    vpc          = var.vpc_id
+  }
 
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-    }
+  provisioner "local-exec" {
+    command = <<EOF
+    aws ec2 create-tags --resources ${self.triggers.vpc} --tags Key=kubernetes.io/cluster/${self.triggers.cluster_name},Value=shared Key=karpenter.sh/discovery,Value=${self.triggers.cluster_name}
+    EOF
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOF
+    aws ec2 delete-tags --resources ${self.triggers.vpc} --tags Key=kubernetes.io/cluster/${self.triggers.cluster_name},Value=shared Key=karpenter.sh/discovery,Value=${self.triggers.cluster_name}
+    EOF
   }
 }
+
+# Tag Subnets, Tested on awscli 2.9.8
+resource "null_resource" "subnet_lz_apps" {
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  triggers = {
+    cluster_name = var.cluster_name
+    subnets      = join(" ", data.aws_subnets.app.ids)
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+    aws ec2 create-tags --resources ${self.triggers.subnets} --tags Key=kubernetes.io/role/internal-elb,Value=1 Key=kubernetes.io/cluster/${self.triggers.cluster_name},Value=shared Key=karpenter.sh/discovery,Value=${self.triggers.cluster_name}
+    EOF
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOF
+    aws ec2 delete-tags --resources ${self.triggers.subnets} --tags Key=kubernetes.io/role/internal-elb,Value=1 Key=kubernetes.io/cluster/${self.triggers.cluster_name},Value=shared Key=karpenter.sh/discovery,Value=${self.triggers.cluster_name}
+    EOF
+  }
+}
+
+resource "null_resource" "subnet_lz_nonexpose" {
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  triggers = {
+    cluster_name = var.cluster_name
+    subnets      = join(" ", data.aws_subnets.nonexpose.ids)
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+    aws ec2 create-tags --resources ${self.triggers.subnets} --tags Key=kubernetes.io/role/internal-elb,Value=1 Key=kubernetes.io/cluster/${self.triggers.cluster_name},Value=shared Key=karpenter.sh/discovery,Value=${self.triggers.cluster_name}
+    EOF
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOF
+    aws ec2 delete-tags --resources ${self.triggers.subnets} --tags Key=kubernetes.io/role/internal-elb,Value=1 Key=kubernetes.io/cluster/${self.triggers.cluster_name},Value=shared Key=karpenter.sh/discovery,Value=${self.triggers.cluster_name}
+    EOF
+  }
+}
+
