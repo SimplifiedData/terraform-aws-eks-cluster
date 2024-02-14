@@ -149,12 +149,12 @@ output "fargate_profiles" {
   value       = module.eks.fargate_profiles
 }
 ################################################################################
-# Additional
+# Additional - REMOVE 
 ################################################################################
-output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
-  value       = module.eks.aws_auth_configmap_yaml
-}
+# output "aws_auth_configmap_yaml" {
+#   description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
+#   value       = module.eks.aws_auth_configmap_yaml
+# }
 ################################################################################
 # Node IAM Instance Profile
 ################################################################################
