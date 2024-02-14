@@ -32,7 +32,7 @@ module "eks_blueprints_addons" {
     }
   }
   ##==========================================================================================##
-  
+
   # IF Don't use deploy addons by argocd 
   # [ LoadBalancer_Controller ] ==============================================================##
   enable_aws_load_balancer_controller = var.enable_load_balancer_controller
@@ -220,13 +220,6 @@ module "eks_blueprints_addons_system" {
   }
   ##==========================================================================================##
 
-  # enable_aws_load_balancer_controller = var.enable_eksaddons
-  # aws_load_balancer_controller = {
-  #   chart_version = local.aws_load_balancer_controller["version"]
-  #   values = [templatefile("${path.module}/helm/load_balancer_controller/values.yaml", {
-  #     vpc_id = var.vpc_id
-  #   })]
-  # }
   depends_on = [kubectl_manifest.system_nodetemplate, kubectl_manifest.system_provisioner]
 }
 

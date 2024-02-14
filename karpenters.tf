@@ -46,7 +46,7 @@ spec:
   #   consolidateAfter: 300s
   #   expireAfter: 720h
   limits:
-    resource:
+    resources:
       cpu: "1000"
       memory: 1000Gi
   ttlSecondsUntilExpired: 1296000 # 5min -- 15 Days = 60 * 60 * 24 * 15 Seconds;
