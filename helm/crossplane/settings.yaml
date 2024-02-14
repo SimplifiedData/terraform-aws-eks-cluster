@@ -1,0 +1,38 @@
+replicas: 2
+serviceAccount:
+  automountServiceAccountToken: true
+
+resourcesCrossplane:
+  limits:
+    cpu: "1"
+    memory: 2048Mi
+  requests:
+    cpu: "1"
+    memory: 2048Mi
+
+resourcesRBACManager:
+  limits:
+    cpu: "1"
+    memory: 2048Mi
+  requests:
+    cpu: "1"
+    memory: 2048Mi
+# nodeSelector:
+#   system: sdo
+#   manage-team: devops
+#   namespace: kube-system
+
+# tolerations:
+# - key: "devopsMangement"
+#   operator: "Exists"
+#   effect: "NoSchedule"
+
+# rbacManager:
+#   nodeSelector:
+#     system: sdo
+#     manage-team: devops
+#     namespace: kube-system
+#   tolerations:
+#     - key: "devopsMangement"
+#       operator: "Exists"
+#       effect: "NoSchedule"

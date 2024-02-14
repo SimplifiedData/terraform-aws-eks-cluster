@@ -1,0 +1,19 @@
+controller:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+webhook:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"

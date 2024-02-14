@@ -1,0 +1,91 @@
+prometheus-node-exporter:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: eks.amazonaws.com/compute-type
+            operator: NotIn
+            values:
+            - fargate
+
+kube-state-metrics:
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      system: sdo
+      manage-team: devops
+      namespace: kube-system
+    tolerations:
+    - key: "devopsMangement"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      system: sdo
+      manage-team: devops
+      namespace: kube-system
+    tolerations:
+    - key: "devopsMangement"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+prometheusOperator:
+  nodeSelector:
+    system: sdo
+    manage-team: devops
+    namespace: kube-system
+  tolerations:
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        system: sdo
+        manage-team: devops
+        namespace: kube-system
+      tolerations:
+      - key: "devopsMangement"
+        operator: "Exists"
+        effect: "NoSchedule"
+
+thanosRuler:
+  thanosRulerSpec:
+    nodeSelector:
+      system: sdo
+      manage-team: devops
+      namespace: kube-system
+    tolerations:
+    - key: "devopsMangement"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+
+grafana:
+  adminPassword: ${grafana_password}
+  tolerations:
+    - key: "devopsMangement"
+      operator: "Exists"
+      effect: "NoSchedule"
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: ${ingress_certs_arn}
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/load-balancer-name: ${ingress_name}
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/ssl-policy: ${ingress_ssl_policy}
+      alb.ingress.kubernetes.io/subnets: ${ingress_subnets}
+      alb.ingress.kubernetes.io/tags: ${ingress_tags}
+      alb.ingress.kubernetes.io/target-type: ip
+    enabled: ${ingress_enabled}

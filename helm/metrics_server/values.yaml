@@ -1,0 +1,21 @@
+affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: eks.amazonaws.com/compute-type
+            operator: NotIn
+            values:
+            - fargate
+replicas: 3
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+nodeSelector:
+  system: sdo
+  manage-team: devops
+  namespace: kube-system
+tolerations:
+- key: "devopsMangement"
+  operator: "Exists"
+  effect: "NoSchedule"
