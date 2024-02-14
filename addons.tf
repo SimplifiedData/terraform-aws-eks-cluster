@@ -17,7 +17,7 @@ module "eks_blueprints_addons" {
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
-      replicas = var.environment == "production" ? 3 : 2
+      replicas     = var.environment == "production" ? 3 : 2
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
     })]
     role_policies = {
@@ -30,6 +30,87 @@ module "eks_blueprints_addons" {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
+  }
+  ##==========================================================================================##
+  
+  # IF Don't use deploy addons by argocd 
+  # [ LoadBalancer_Controller ] ==============================================================##
+  enable_aws_load_balancer_controller = var.enable_load_balancer_controller
+  aws_load_balancer_controller = {
+    chart_version = local.aws_load_balancer_controller["version"]
+    values = [templatefile("${path.module}/helm/load_balancer_controller/values.yaml", {
+      vpc_id = var.vpc_id
+    })]
+  }
+  ##==========================================================================================##
+  # [ Metrics_server ]
+  enable_metrics_server = var.enable_metrics_server
+  metrics_server = {
+    chart_version = local.metrics-server["version"]
+    values        = [templatefile("${path.module}/helm/metrics_server/values.yaml", {})]
+  }
+  ##==========================================================================================##
+  # [ Prometheus and Grafana ] ===============================================================##
+  enable_kube_prometheus_stack = var.enable_kube_prometheus_stack
+  kube_prometheus_stack = {
+    chart_version = local.kube_prometheus_stack["version"]
+    values = setunion(var.config_prometheus_stack, [templatefile("${path.module}/helm/kube_prometheus_stack/values.yaml", {
+      ingress_enabled    = var.enable_grafana_ingress
+      grafana_password   = try(random_password.default["grafana"].result, "")
+      ingress_certs_arn  = var.certificate
+      ingress_name       = local.grafana_ingress
+      ingress_ssl_policy = local.ingress_ssl_policy
+      ingress_subnets    = join(",", data.aws_subnets.app.ids)
+      ingress_tags = join(",", formatlist(
+        "%s=%s", keys(merge(tomap(
+          { Name = local.grafana_ingress }), var.tags)), values(merge(tomap({ Name = local.grafana_ingress }
+        ), var.tags))
+      ))
+    })])
+  }
+  ##==========================================================================================##
+  # [--- ARGO Workflows ---] =================================================================##
+  enable_argo_workflows = var.enable_argo_workflows
+  argo_workflows = {
+    chart_version = local.argo_workflows["version"]
+    values = setunion(var.config_argo_workflow, [templatefile("${path.module}/helm/argo_workflow/values.yaml", {
+      ingress_enabled    = true
+      ingress_name       = local.argowf_ingress
+      ingress_certs_arn  = var.certificate
+      ingress_ssl_policy = local.ingress_ssl_policy
+      ingress_subnets    = join(",", data.aws_subnets.app.ids)
+      ingress_tags = join(",", formatlist(
+        "%s=%s", keys(merge(tomap(
+          { Name = local.argowf_ingress }), var.tags)), values(merge(tomap({ Name = local.argowf_ingress }
+        ), var.tags))
+      ))
+    })])
+  }
+  ##==========================================================================================##
+  # [--- ARGO Event ---] =====================================================================##
+  enable_argo_events = var.enable_argo_events
+  argo_events = {
+    chart_version = local.argo_event["version"]
+    values        = setunion(var.config_argo_event, [templatefile("${path.module}/helm/argoevent/values.yaml", {})])
+  }
+  ##==========================================================================================##
+  # [--- ARGO rollouts ---] ==================================================================##
+  enable_argo_rollouts = var.enable_argo_rollouts
+  argo_rollouts = {
+    chart_version = local.argo_rollout["version"]
+    values = setunion(var.config_argo_rollouts, [templatefile("${path.module}/helm/argorollouts/values.yaml", {
+      enable_dashboard   = true #var.enable_argo_rollouts_dashboard
+      ingress_enabled    = true #var.enable_argo_rollouts_dashboard
+      ingress_name       = local.argorollouts_ingress
+      ingress_certs_arn  = var.certificate
+      ingress_ssl_policy = local.ingress_ssl_policy
+      ingress_subnets    = join(",", data.aws_subnets.app.ids)
+      ingress_tags = join(",", formatlist(
+        "%s=%s", keys(merge(tomap(
+          { Name = local.argorollouts_ingress }), var.tags)), values(merge(tomap({ Name = local.argorollouts_ingress }
+        ), var.tags))
+      ))
+    })])
   }
   ##==========================================================================================##
 }
@@ -94,7 +175,7 @@ module "eks_blueprints_addons_system" {
         }
       })
     }
-    vpc-cni = { most_recent = true }
+    vpc-cni    = { most_recent = true }
     kube-proxy = {}
   } : {}
   ##==========================================================================================##
@@ -138,6 +219,7 @@ module "eks_blueprints_addons_system" {
     values        = [templatefile("${path.module}/helm/cluster_proportional_autoscaler/values.yaml", {})]
   }
   ##==========================================================================================##
+
   # enable_aws_load_balancer_controller = var.enable_eksaddons
   # aws_load_balancer_controller = {
   #   chart_version = local.aws_load_balancer_controller["version"]

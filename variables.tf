@@ -127,7 +127,30 @@ variable "crossplane" {
   type    = map(any)
   default = {}
 }
-
+variable "enable_load_balancer_controller" {
+  type    = bool
+  default = false
+}
+variable "enable_metrics_server" {
+  type    = bool
+  default = false
+}
+variable "enable_kube_prometheus_stack" {
+  type    = bool
+  default = false
+}
+variable "enable_argo_workflows" {
+  type    = bool
+  default = false
+}
+variable "enable_argo_events" {
+  type    = bool
+  default = false
+}
+variable "enable_argo_rollouts" {
+  type    = bool
+  default = false
+}
 variable "condition_values" {
   type    = any
   default = []
