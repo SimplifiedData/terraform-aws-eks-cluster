@@ -57,7 +57,7 @@ YAML
 
   depends_on = [
     module.eks.cluster,
-    helm_release.karpenter,
+    module.eks_blueprints_addons.karpenter,
     kubectl_manifest.system_nodetemplate,
   ]
 }
@@ -96,7 +96,7 @@ YAML
 
   depends_on = [
     module.eks.cluster,
-    helm_release.karpenter,
+    module.eks_blueprints_addons.karpenter,
   ]
 }
 
@@ -159,6 +159,10 @@ spec:
     cpu: "1000"
     memory: 1000Gi
 YAML
+  depends_on = [
+    module.eks.cluster,
+    module.eks_blueprints_addons.karpenter,
+  ]
 }
 
 resource "kubectl_manifest" "default_nodetemplate" {
@@ -189,4 +193,9 @@ spec:
     app.kubernetes.io/created-by: "karpenter"
     karpenter.sh/discovery: "${module.eks.cluster_name}"
 YAML
+
+  depends_on = [
+    module.eks.cluster,
+    module.eks_blueprints_addons.karpenter,
+  ]
 }
