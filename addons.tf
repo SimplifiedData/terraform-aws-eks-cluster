@@ -10,7 +10,7 @@ module "eks_blueprints_addons" {
   create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
 
   # [ Karpenter ] ============================================================================##
-  enable_karpenter = true
+  enable_karpenter                           = true
   karpenter_enable_instance_profile_creation = false
   karpenter = {
     chart_version       = local.karpenter["version"]
