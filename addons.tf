@@ -11,7 +11,7 @@ module "eks_blueprints_addons" {
 
   # [ Karpenter ] ============================================================================##
   enable_karpenter = true
-  karpenter_enable_instance_profile_creation = false
+  # karpenter_enable_instance_profile_creation = true
   karpenter = {
     chart_version       = local.karpenter["version"]
     # repository = "oci://public.ecr.aws/karpenter/karpenter"
@@ -21,11 +21,11 @@ module "eks_blueprints_addons" {
       replicas     = var.environment == "production" ? 3 : 2
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
     })]
-    role_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
+    # role_policies = {
+    #   AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    # }
   }
-  karpenter_enable_spot_termination = true
+  # karpenter_enable_spot_termination = true
   karpenter_node = {
     # create_instance_profile = true
     iam_role_additional_policies = {
