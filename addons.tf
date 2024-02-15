@@ -11,7 +11,7 @@ module "eks_blueprints_addons" {
 
   # [ Karpenter ] ============================================================================##
   enable_karpenter = true
-  # karpenter_enable_instance_profile_creation = false
+  karpenter_enable_instance_profile_creation = true
   karpenter = {
     chart_version       = local.karpenter["version"]
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
