@@ -1,6 +1,6 @@
 module "eks_blueprints_addons" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.10.0"
+  version = "1.9.2"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -11,19 +11,18 @@ module "eks_blueprints_addons" {
 
   # [ Karpenter ] ============================================================================##
   enable_karpenter = true
-  karpenter_enable_instance_profile_creation = false
+  # karpenter_enable_instance_profile_creation = false
   karpenter = {
     chart_version       = local.karpenter["version"]
-    # repository = "oci://public.ecr.aws/karpenter/karpenter"
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
       replicas     = var.environment == "production" ? 3 : 2
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
     })]
-    # role_policies = {
-    #   AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    # }
+    role_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
   }
   karpenter_enable_spot_termination = true
   karpenter_node = {
@@ -118,7 +117,7 @@ module "eks_blueprints_addons" {
 
 module "eks_blueprints_addons_system" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.10.0"
+  version = "1.9.2"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -237,4 +236,3 @@ module "ebs_csi_irsa_role" {
     }
   }
 }
-

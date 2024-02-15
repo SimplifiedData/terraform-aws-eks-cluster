@@ -149,7 +149,7 @@ output "fargate_profiles" {
   value       = module.eks.fargate_profiles
 }
 ################################################################################
-# Additional - REMOVE 
+# Additional - REMOVE
 ################################################################################
 # output "aws_auth_configmap_yaml" {
 #   description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
@@ -158,15 +158,15 @@ output "fargate_profiles" {
 ################################################################################
 # Node IAM Instance Profile
 ################################################################################
-# output "karpenter" {
-#   value = module.eks_blueprints_addons.karpenter
-# }
-# output "karpenter_node_instance_profile_name" {
-#   value = module.eks_blueprints_addons.karpenter.node_instance_profile_name
-# }
-# output "karpenter_node_role" {
-#   value = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-# }
+output "karpenter" {
+  value = module.eks_blueprints_addons.karpenter
+}
+output "karpenter_node_instance_profile_name" {
+  value = module.eks_blueprints_addons.karpenter.node_instance_profile_name
+}
+output "karpenter_node_role" {
+  value = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+}
 
 ## Output Argo Family
 output "argo_rollouts" {
@@ -192,13 +192,13 @@ output "kube_prometheus_stack" {
   value       = module.eks_blueprints_addons.kube_prometheus_stack
 }
 
-# output "gitops_metadata_iam_role_arn" {
-#   value = module.eks_blueprints_addons.gitops_metadata.karpenter_iam_role_arn
-# }
+output "gitops_metadata_iam_role_arn" {
+  value = module.eks_blueprints_addons.gitops_metadata.karpenter_iam_role_arn
+}
 
-# output "gitops_metadata_service_account" {
-#   value = module.eks_blueprints_addons.gitops_metadata.karpenter_service_account
-# }
+output "gitops_metadata_service_account" {
+  value = module.eks_blueprints_addons.gitops_metadata.karpenter_service_account
+}
 
 ### Crossplane Role
 output "crossplane_role" {

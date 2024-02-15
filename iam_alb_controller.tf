@@ -22,7 +22,7 @@ resource "aws_iam_role" "albrole" {
     ]
   })
   inline_policy {
-    name = "LoadBalance-conroller" ## [Hidden Policy name]: Permission 
+    name = "LoadBalance-conroller" ## [Hidden Policy name]: Permission
     policy = jsonencode({
       "Version" : "2012-10-17",
       "Statement" : [

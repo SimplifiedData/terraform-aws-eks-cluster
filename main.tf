@@ -41,7 +41,7 @@ locals {
   ## ADDON Version
   #============================================
   karpenter = {
-    version = "v0.32.1"
+    version = "v0.31.2"
   }
   argocd = {
     version = "5.51.1"
@@ -120,14 +120,19 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.18.0"
+  version = "~> 19.0"
 
   cluster_name                   = var.cluster_name
   cluster_version                = try(local.cluster_version, var.cluster_version)
   cluster_endpoint_public_access = true
 
-  vpc_id                    = var.vpc_id
-  subnet_ids                = data.aws_subnets.nonexpose.ids
+  vpc_id     = var.vpc_id
+  subnet_ids = data.aws_subnets.nonexpose.ids
+
+  # Fargate profiles use the cluster primary security group so these are not utilized
+  create_cluster_security_group = false
+  create_node_security_group    = false
+
   manage_aws_auth_configmap = true
   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
     [
@@ -136,14 +141,12 @@ module "eks" {
         username = "system:node:{{EC2PrivateDNSName}}"
         groups = [
           "system:bootstrappers",
-          "system:nodes"
+          "system:nodes",
         ]
       }
     ]
   )
-  # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = false
-  create_node_security_group    = false
+
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
@@ -184,74 +187,6 @@ module "eks" {
     "karpenter.sh/discovery" = var.cluster_name
   })
 }
-
-# module "karpenter" {
-#   source                 = "terraform-aws-modules/eks/aws//modules/karpenter"
-#   version                = "19.18.0"
-#   cluster_name           = module.eks.cluster_name
-#   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
-
-#   # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
-#   # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
-#   enable_karpenter_instance_profile_creation = true
-
-#   # Used to attach additional IAM policies to the Karpenter node IAM role
-#   iam_role_additional_policies = {
-#     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-#   }
-
-#   tags = merge(var.tags, {
-#     Name                     = var.cluster_name
-#     "karpenter.sh/discovery" = var.cluster_name
-#   })
-# }
-
-# resource "helm_release" "karpenter" {
-#   namespace        = "karpenter"
-#   create_namespace = true
-
-#   name                = "karpenter"
-#   repository          = "oci://public.ecr.aws/karpenter"
-#   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-#   repository_password = data.aws_ecrpublic_authorization_token.token.password
-#   chart               = "karpenter"
-#   version             = "v0.32.1"
-
-#   values = [
-#     <<-EOT
-#     settings:
-#       clusterName: ${module.eks.cluster_name}
-#       clusterEndpoint: ${module.eks.cluster_endpoint}
-#       interruptionQueueName: ${module.karpenter.queue_name}
-#     serviceAccount:
-#       annotations:
-#         eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn}
-#     replicas: ${var.environment == "production" ? 3 : 2}
-#     controller:
-#       resources:
-#         requests:
-#           cpu:  ${var.environment == "production" ? "1000m" : "500m"} 
-#     EOT
-#   ]
-# }
-# module "eks_auth" {
-#   source                    = "terraform-aws-modules/eks/aws//modules/aws-auth"
-#   version                   = "19.18.0"
-
-#   manage_aws_auth_configmap = true
-#   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-#     [
-#       {
-#         rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-#         username = "system:node:{{EC2PrivateDNSName}}"
-#         groups = [
-#           "system:bootstrappers",
-#           "system:nodes",
-#         ]
-#       }
-#     ]
-#   )
-# }
 
 #============================================
 # Tag VPC, Tested on awscli 2.9.8           #
@@ -328,4 +263,3 @@ resource "null_resource" "subnet_lz_nonexpose" {
     EOF
   }
 }
-
