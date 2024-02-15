@@ -128,10 +128,6 @@ spec:
         - key: "devopsMangement"
           value: "true"
           effect: "NoSchedule"
-      startupTaints:
-        - key: "devopsMangement"
-          value: "true"
-          effect: "NoSchedule"
       requirements:
         - key: "karpenter.k8s.aws/instance-category"
           operator: In
