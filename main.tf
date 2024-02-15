@@ -136,8 +136,7 @@ module "eks" {
         username = "system:node:{{EC2PrivateDNSName}}"
         groups = [
           "system:bootstrappers",
-          "system:nodes",
-          "system:node-proxier"
+          "system:nodes"
         ]
       }
     ]
