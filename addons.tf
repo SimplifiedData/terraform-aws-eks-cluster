@@ -1,6 +1,6 @@
 module "eks_blueprints_addons" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.9.2"
+  version = "1.10.1"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -10,8 +10,8 @@ module "eks_blueprints_addons" {
   create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
 
   # [ Karpenter ] ============================================================================##
-  enable_karpenter = true
-  # karpenter_enable_instance_profile_creation = false
+  enable_karpenter                           = true
+  karpenter_enable_instance_profile_creation = false
   karpenter = {
     chart_version       = local.karpenter["version"]
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
@@ -117,7 +117,7 @@ module "eks_blueprints_addons" {
 
 module "eks_blueprints_addons_system" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.9.2"
+  version = "1.10.1"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
