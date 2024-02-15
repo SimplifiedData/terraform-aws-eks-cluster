@@ -10,28 +10,28 @@ module "eks_blueprints_addons" {
   create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
 
   # [ Karpenter ] ============================================================================##
-  enable_karpenter = true
-  # karpenter_enable_instance_profile_creation = true
-  karpenter = {
-    chart_version       = local.karpenter["version"]
-    # repository = "oci://public.ecr.aws/karpenter/karpenter"
-    repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-    repository_password = data.aws_ecrpublic_authorization_token.token.password
-    values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
-      replicas     = var.environment == "production" ? 3 : 2
-      requests_cpu = var.environment == "production" ? "1000m" : "500m"
-    })]
-    # role_policies = {
-    #   AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    # }
-  }
+  # enable_karpenter = true
+  # karpenter_enable_instance_profile_creation = false
+  # karpenter = {
+  #   chart_version       = local.karpenter["version"]
+  #   # repository = "oci://public.ecr.aws/karpenter/karpenter"
+  #   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
+  #   repository_password = data.aws_ecrpublic_authorization_token.token.password
+  #   values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
+  #     replicas     = var.environment == "production" ? 3 : 2
+  #     requests_cpu = var.environment == "production" ? "1000m" : "500m"
+  #   })]
+  #   role_policies = {
+  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #   }
+  # }
   # karpenter_enable_spot_termination = true
-  karpenter_node = {
-    # create_instance_profile = true
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
-  }
+  # karpenter_node = {
+  #   # create_instance_profile = true
+  #   iam_role_additional_policies = {
+  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #   }
+  # }
   ##==========================================================================================##
 
   # IF Don't use deploy addons by argocd 
