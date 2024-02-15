@@ -132,7 +132,7 @@ module "eks" {
   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
     [
       {
-        rolearn  = module.karpenter.role_arn
+        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
         username = "system:node:{{EC2PrivateDNSName}}"
         groups = [
           "system:bootstrappers",
@@ -185,55 +185,55 @@ module "eks" {
   })
 }
 
-module "karpenter" {
-  source                 = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version                = "19.18.0"
-  cluster_name           = module.eks.cluster_name
-  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+# module "karpenter" {
+#   source                 = "terraform-aws-modules/eks/aws//modules/karpenter"
+#   version                = "19.18.0"
+#   cluster_name           = module.eks.cluster_name
+#   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
-  # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
-  # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
-  enable_karpenter_instance_profile_creation = true
+#   # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
+#   # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
+#   enable_karpenter_instance_profile_creation = true
 
-  # Used to attach additional IAM policies to the Karpenter node IAM role
-  iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
+#   # Used to attach additional IAM policies to the Karpenter node IAM role
+#   iam_role_additional_policies = {
+#     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+#   }
 
-  tags = merge(var.tags, {
-    Name                     = var.cluster_name
-    "karpenter.sh/discovery" = var.cluster_name
-  })
-}
+#   tags = merge(var.tags, {
+#     Name                     = var.cluster_name
+#     "karpenter.sh/discovery" = var.cluster_name
+#   })
+# }
 
-resource "helm_release" "karpenter" {
-  namespace        = "karpenter"
-  create_namespace = true
+# resource "helm_release" "karpenter" {
+#   namespace        = "karpenter"
+#   create_namespace = true
 
-  name                = "karpenter"
-  repository          = "oci://public.ecr.aws/karpenter"
-  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-  repository_password = data.aws_ecrpublic_authorization_token.token.password
-  chart               = "karpenter"
-  version             = "v0.32.1"
+#   name                = "karpenter"
+#   repository          = "oci://public.ecr.aws/karpenter"
+#   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
+#   repository_password = data.aws_ecrpublic_authorization_token.token.password
+#   chart               = "karpenter"
+#   version             = "v0.32.1"
 
-  values = [
-    <<-EOT
-    settings:
-      clusterName: ${module.eks.cluster_name}
-      clusterEndpoint: ${module.eks.cluster_endpoint}
-      interruptionQueueName: ${module.karpenter.queue_name}
-    serviceAccount:
-      annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn}
-    replicas: ${var.environment == "production" ? 3 : 2}
-    controller:
-      resources:
-        requests:
-          cpu:  ${var.environment == "production" ? "1000m" : "500m"} 
-    EOT
-  ]
-}
+#   values = [
+#     <<-EOT
+#     settings:
+#       clusterName: ${module.eks.cluster_name}
+#       clusterEndpoint: ${module.eks.cluster_endpoint}
+#       interruptionQueueName: ${module.karpenter.queue_name}
+#     serviceAccount:
+#       annotations:
+#         eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn}
+#     replicas: ${var.environment == "production" ? 3 : 2}
+#     controller:
+#       resources:
+#         requests:
+#           cpu:  ${var.environment == "production" ? "1000m" : "500m"} 
+#     EOT
+#   ]
+# }
 # module "eks_auth" {
 #   source                    = "terraform-aws-modules/eks/aws//modules/aws-auth"
 #   version                   = "19.18.0"
