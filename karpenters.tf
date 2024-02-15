@@ -57,7 +57,7 @@ YAML
 
   depends_on = [
     module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
+    helm_release.karpenter,
     kubectl_manifest.system_nodetemplate,
   ]
 }
@@ -96,7 +96,7 @@ YAML
 
   depends_on = [
     module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
+    helm_release.karpenter,
   ]
 }
 

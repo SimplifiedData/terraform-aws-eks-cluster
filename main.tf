@@ -126,8 +126,8 @@ module "eks" {
   cluster_version                = try(local.cluster_version, var.cluster_version)
   cluster_endpoint_public_access = true
 
-  vpc_id     = var.vpc_id
-  subnet_ids = data.aws_subnets.nonexpose.ids
+  vpc_id                    = var.vpc_id
+  subnet_ids                = data.aws_subnets.nonexpose.ids
   manage_aws_auth_configmap = true
   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
     [
@@ -186,8 +186,8 @@ module "eks" {
 }
 
 module "karpenter" {
-  source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "19.18.0"
+  source                 = "terraform-aws-modules/eks/aws//modules/karpenter"
+  version                = "19.18.0"
   cluster_name           = module.eks.cluster_name
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
@@ -237,7 +237,7 @@ resource "helm_release" "karpenter" {
 # module "eks_auth" {
 #   source                    = "terraform-aws-modules/eks/aws//modules/aws-auth"
 #   version                   = "19.18.0"
-  
+
 #   manage_aws_auth_configmap = true
 #   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
 #     [
