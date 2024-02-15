@@ -71,7 +71,7 @@ metadata:
   name: kubesystem
 spec:
   amiFamily: AL2
-  instanceProfile: "${module.eks_blueprints_addons.karpenter.node_instance_profile_name}"
+  # instanceProfile: "${module.eks_blueprints_addons.karpenter.node_instance_profile_name}"
   securityGroupSelector:
     karpenter.sh/discovery: ${module.eks.cluster_name}
   subnetSelector:
