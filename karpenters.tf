@@ -176,7 +176,6 @@ spec:
   securityGroupSelectorTerms:
     - tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
-        environment: ${var.environment}
   instanceProfile: "${module.eks_blueprints_addons.karpenter.node_instance_profile_name}"
   tags:
     Name: "kube_system_ng-by-karpenter_${module.eks.cluster_name}"
