@@ -132,7 +132,7 @@ module "eks" {
   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
     [
       {
-        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+        rolearn  = module.karpenter.role_arn
         username = "system:node:{{EC2PrivateDNSName}}"
         groups = [
           "system:bootstrappers",
