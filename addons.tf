@@ -14,7 +14,7 @@ module "eks_blueprints_addons" {
   karpenter_enable_instance_profile_creation = false
   karpenter = {
     chart_version       = local.karpenter["version"]
-    repository = "oci://public.ecr.aws/karpenter/karpenter"
+    # repository = "oci://public.ecr.aws/karpenter/karpenter"
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
