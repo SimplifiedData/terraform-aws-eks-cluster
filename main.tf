@@ -137,6 +137,7 @@ module "eks" {
         groups = [
           "system:bootstrappers",
           "system:nodes",
+          "system:node-proxier"
         ]
       }
     ]
