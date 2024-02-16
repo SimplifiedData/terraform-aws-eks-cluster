@@ -170,7 +170,6 @@ resource "aws_iam_policy" "CrossplaneControllerPolicy" {
 
   name        = "AWSGSCrossplanePolicy"
   path        = "/"
-  # description = "KarpenterControllerPolicy-${module.eks.cluster_name}-${random_string.default.result}"
   policy      = templatefile("${path.module}/policys/crossplane_policy.json", {})
 }
 
