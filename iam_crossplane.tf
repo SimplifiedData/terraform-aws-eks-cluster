@@ -177,5 +177,5 @@ resource "aws_iam_role_policy_attachment" "CrossplaneControllerPolicy" {
   count = var.enable_crossplane ? 1 : 0
 
   role       = aws_iam_role.crossplane[0].name
-  policy_arn = aws_iam_policy.CrossplaneControllerPolicy.arn
+  policy_arn = aws_iam_policy.CrossplaneControllerPolicy[0].arn
 }
