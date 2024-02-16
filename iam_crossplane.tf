@@ -170,6 +170,7 @@ resource "aws_iam_policy" "CrossplaneControllerPolicy" {
 
   name        = "AWSGSCrossplanePolicy"
   path        = "/"
+  description = "Policy for clossplane resource provider"
   policy      = templatefile("${path.module}/policys/crossplane_policy.json", {})
 }
 
