@@ -220,7 +220,7 @@ module "eks_blueprints_addons_system" {
   }
   ##==========================================================================================##
 
-  depends_on = [kubectl_manifest.system_nodetemplate, kubectl_manifest.system_provisioner]
+  depends_on = [kubectl_manifest.default_provisioner, kubectl_manifest.default_nodetemplate]
 }
 
 module "ebs_csi_irsa_role" {
