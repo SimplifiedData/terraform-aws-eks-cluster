@@ -1,0 +1,240 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Effect": "Allow",
+          "Action": [
+              "acm:*",
+              "acm-pca:*",
+              "aws-marketplace:Describe*",
+              "aws-marketplace:List*",
+              "aws-marketplace:View*",
+              "fis:*",
+              "shield:*",
+              "waf-regional:*",
+              "waf:*",
+              "wafv2:*",
+              "backup:*",
+              "backup-gateway:*",
+              "backup-storage:*",
+              "schemas:*",
+              "kafkaconnect:*",
+              "geo:*",
+              "savingsplans:*"
+          ],
+          "Resource": "*"
+      },
+      {
+          "Effect": "Allow",
+          "Action": [
+              "route53:List*"
+          ],
+          "Resource": [
+              "arn:aws:route53:::hostedzone/*"
+          ]
+      },
+      {
+          "Effect": "Allow",
+          "Action": [
+              "ram:*",
+              "ec2:*",
+              "cloudfront:*",
+              "elasticloadbalancing:*",
+              "servicequotas:*",
+              "cloudformation:*",
+              "eks:*",
+              "ecs:*",
+              "apigateway:*",
+              "execute-api:*",
+              "lambda:*",
+              "kafka:*",
+              "ssm:*",
+              "s3:*",
+              "ses:*",
+              "cloudwatch:*",
+              "logs:*",
+              "kms:*",
+              "personalize:*",
+              "transfer:*",
+              "glue:*",
+              "codepipeline:*",
+              "codebuild:*",
+              "codecommit:*",
+              "codeartifact:*",
+              "codedeploy:*",
+              "codedeploy-commands-secure:*",
+              "codestar:*",
+              "codestar-connections:*",
+              "codestar-notifications:*",
+              "codeguru:*",
+              "codeguru-profiler:*",
+              "codeguru-reviewer:*",
+              "elasticbeanstalk:*",
+              "amplify:*",
+              "appstream:*",
+              "athena:*",
+              "elasticmapreduce:*",
+              "batch:*",
+              "redshift:*",
+              "kinesis:*",
+              "sqs:*",
+              "states:*",
+              "elasticache:*",
+              "firehose:*",
+              "servicediscovery:*",
+              "mq:*",
+              "airflow:*",
+              "sts:*",
+              "appmesh:*",
+              "serverlessrepo:*",
+              "iam:*",
+              "forecast:*",
+              "datasync:*",
+              "fsx:DescribeFileSystems",
+              "elasticfilesystem:Describe*",
+              "quicksight:*",
+              "ecr-public:*",
+              "ecr:*",
+              "events:*",
+              "scheduler:*",
+              "pipes:*",
+              "mobiletargeting:*",
+              "wellarchitected:*",
+              "cloudhsm:*",
+              "rekognition:*",
+              "resiliencehub:*",
+              "textract:*",
+              "application-autoscaling:*",
+              "autoscaling:*",
+              "apprunner:*",
+              "rds:*",
+              "mobiletargeting:*",
+              "sns:*",
+              "evidently:*",
+              "cloud9:*",
+              "s3express:*"
+          ],
+          "Resource": "*"
+      },
+      {
+          "Sid": "AmazonForecastPassRolePolicy",
+          "Effect": "Allow",
+          "Action": [
+              "iam:PassRole"
+          ],
+          "Resource": "*",
+          "Condition": {
+              "StringEquals": {
+                  "iam:PassedToService": "forecast.amazonaws.com"
+              }
+          }
+      },
+      {
+          "Sid": "ExplicitDeny",
+          "Effect": "Deny",
+          "Action": [
+              "iam:DeactivateMFADevice",
+              "iam:RemoveClientIDFromOpenIDConnectProvider",
+              "iam:ResetServiceSpecificCredential",
+              "iam:CreateVirtualMFADevice",
+              "iam:CreateUser",
+              "iam:RemoveUserFromGroup",
+              "iam:EnableMFADevice",
+              "iam:ResyncMFADevice",
+              "iam:DeleteAccessKey",
+              "iam:DeleteGroup",
+              "iam:DeleteSSHPublicKey",
+              "iam:DeleteUser",
+              "iam:DeleteSigningCertificate",
+              "iam:DeleteVirtualMFADevice",
+              "iam:DeleteServerCertificate",
+              "iam:DeleteServiceLinkedRole",
+              "iam:DeleteAccountAlias",
+              "iam:DeleteOpenIDConnectProvider",
+              "iam:DeleteServiceSpecificCredential",
+              "iam:DeleteLoginProfile",
+              "iam:DeleteSAMLProvider",
+              "iam:DeleteRole",
+              "s3:DeleteObject"
+          ],
+          "Resource": "*"
+      },
+      {
+          "Effect": "Allow",
+          "Action": [
+              "iam:PassRole"
+          ],
+          "Resource": "*",
+          "Condition": {
+              "StringEquals": {
+                  "iam:PassedToService": [
+                      "datasync.amazonaws.com"
+                  ]
+              }
+          }
+      },
+      {
+          "Sid": "EventBrideIAMCreateServiceLinkedRoleForApi",
+          "Effect": "Allow",
+          "Action": "iam:CreateServiceLinkedRole",
+          "Resource": "arn:aws:iam::*:role/aws-service-role/AmazonEventBridgeApiDestinationsServiceRolePolicy",
+          "Condition": {
+              "StringEquals": {
+                  "iam:AWSServiceName": "apidestinations.events.amazonaws.com"
+              }
+          }
+      },
+      {
+          "Sid": "EventBrideSchemasIAMCreateServiceLinkedRole",
+          "Effect": "Allow",
+          "Action": "iam:CreateServiceLinkedRole",
+          "Resource": "arn:aws:iam::*:role/aws-service-role/schemas.amazonaws.com/AWSServiceRoleForSchemas",
+          "Condition": {
+              "StringEquals": {
+                  "iam:AWSServiceName": "schemas.amazonaws.com"
+              }
+          }
+      },
+      {
+          "Sid": "EventBrideSecretsManagerAccessForApi",
+          "Effect": "Allow",
+          "Action": [
+              "secretsmanager:*"
+          ],
+          "Resource": "arn:aws:secretsmanager:*:*:secret:events!*"
+      },
+      {
+          "Sid": "EventBrideIAMPassRoleAccess",
+          "Effect": "Allow",
+          "Action": "iam:PassRole",
+          "Resource": "arn:aws:iam::*:role/*",
+          "Condition": {
+              "StringLike": {
+                  "iam:PassedToService": "events.amazonaws.com"
+              }
+          }
+      },
+      {
+          "Sid": "EventBrideSchIAMPassRoleAccess",
+          "Effect": "Allow",
+          "Action": "iam:PassRole",
+          "Resource": "arn:aws:iam::*:role/*",
+          "Condition": {
+              "StringLike": {
+                  "iam:PassedToService": "scheduler.amazonaws.com"
+              }
+          }
+      },
+      {
+          "Sid": "EventBrideSchPipesIAMPassRoleAccess",
+          "Effect": "Allow",
+          "Action": "iam:PassRole",
+          "Resource": "arn:aws:iam::*:role/*",
+          "Condition": {
+              "StringLike": {
+                  "iam:PassedToService": "pipes.amazonaws.com"
+              }
+          }
+      }
+  ]
+}

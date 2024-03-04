@@ -117,9 +117,66 @@ resource "aws_iam_role" "crossplane" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "additional" {
+resource "aws_iam_role_policy_attachment" "AWSGSBasePolicy" {
   count = var.enable_crossplane ? 1 : 0
 
   role       = aws_iam_role.crossplane[0].name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSBasePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "AWSGSComputeExtendPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSComputeExtendPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "AWSGSComputeFullPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSComputeFullPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "AWSGSDatabaseFullPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSDatabaseFullPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "AWSGSLogFullPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSLogFullPolicy"
+}
+resource "aws_iam_role_policy_attachment" "AWSGSNetworkFullPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSNetworkFullPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "AWSGSStorageFullPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSGSNetworkFullPolicy"
+}
+
+resource "aws_iam_policy" "CrossplaneControllerPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  name        = "AWSGSCrossplanePolicy"
+  path        = "/"
+  description = "Policy for clossplane resource provider"
+  policy      = templatefile("${path.module}/policys/crossplane_policy.json", {})
+}
+
+resource "aws_iam_role_policy_attachment" "CrossplaneControllerPolicy" {
+  count = var.enable_crossplane ? 1 : 0
+
+  role       = aws_iam_role.crossplane[0].name
+  policy_arn = aws_iam_policy.CrossplaneControllerPolicy[0].arn
 }

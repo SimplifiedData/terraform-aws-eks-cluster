@@ -5,7 +5,7 @@ server:
     enabled: true
     minReplicas: 2
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -36,7 +36,7 @@ server:
 global:
   logging.format: ${global_log_format}
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -47,7 +47,7 @@ global:
 controller:
   enableStatefulSet: true
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -57,7 +57,7 @@ controller:
 
 dex:
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -67,7 +67,7 @@ dex:
 
 redis:
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -80,7 +80,7 @@ repoServer:
     enabled: true
     minReplicas: 2
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -90,7 +90,7 @@ repoServer:
 
 applicationSet:
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -100,7 +100,7 @@ applicationSet:
 
 notifications:
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
