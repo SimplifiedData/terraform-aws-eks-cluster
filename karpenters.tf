@@ -75,6 +75,7 @@ metadata:
   name: default
 spec:
   amiFamily: AL2
+  associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
         Name: "*nonexpose*"
