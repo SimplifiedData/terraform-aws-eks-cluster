@@ -34,14 +34,14 @@ locals {
     }
   ]
 
-  cluster_version    = 1.28
+  cluster_version    = 1.29
   ingress_ssl_policy = "ELBSecurityPolicy-TLS13-1-3-2021-06"
 
   #============================================
   ## ADDON Version
   #============================================
   karpenter = {
-    version = "0.35.0"
+    version = "0.35.1"
   }
   argocd = {
     version = "6.5.1"
@@ -123,7 +123,7 @@ module "eks" {
   version = "~> 19.0"
 
   cluster_name                   = var.cluster_name
-  cluster_version                = try(local.cluster_version, var.cluster_version)
+  cluster_version                = try(var.cluster_version, local.cluster_version)
   cluster_endpoint_public_access = true
 
   vpc_id     = var.vpc_id

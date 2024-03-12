@@ -132,6 +132,7 @@ module "eks_blueprints_addons_system" {
       configuration_values = jsonencode({
         # computeType = "Fargate"
         nodeSelector = {
+          "kubernetes.io/arch" = "arm64"
           system      = var.tags["System"]
           manage-team = "devops"
           namespace   = "kube-system"
@@ -162,6 +163,7 @@ module "eks_blueprints_addons_system" {
       configuration_values = jsonencode({
         controller = {
           nodeSelector = {
+            "kubernetes.io/arch" = "arm64"
             system      = var.tags["System"]
             manage-team = "devops"
             namespace   = "kube-system"
