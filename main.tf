@@ -120,7 +120,7 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "20.8.2"
 
   cluster_name                   = var.cluster_name
   cluster_version                = try(var.cluster_version, local.cluster_version)
@@ -132,20 +132,6 @@ module "eks" {
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
-
-  manage_aws_auth_configmap = true
-  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-    [
-      {
-        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
-    ]
-  )
 
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -187,7 +173,24 @@ module "eks" {
     "karpenter.sh/discovery" = var.cluster_name
   })
 }
+module "eksawsauth" {
+  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
+  version = "20.8.2"
 
+  manage_aws_auth_configmap = true
+  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
+    [
+      {
+        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+      }
+    ]
+  )
+ }
 #============================================
 # Tag VPC, Tested on awscli 2.9.8           #
 #============================================
