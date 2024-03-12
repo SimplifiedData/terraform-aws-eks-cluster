@@ -7,53 +7,53 @@ locals {
 ## KARPENTER Update CRDs
 ##==================================================================
 # Kube Apply CRDs
-data "http" "provisioners" {
-  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_provisioners.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "provisioners" {
-  count     = var.enable_manifest_karpenter ? 1 : 0
-  yaml_body = data.http.provisioners.body
+# data "http" "provisioners" {
+#   url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_provisioners.yaml"
+#   request_headers = {
+#     Accept = "text/plain"
+#   }
+# }
+# resource "kubectl_manifest" "provisioners" {
+#   count     = var.enable_manifest_karpenter ? 1 : 0
+#   yaml_body = data.http.provisioners.body
 
-  depends_on = [
-    module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
-  ]
-}
+#   depends_on = [
+#     module.eks.cluster,
+#     module.eks_blueprints_addons.karpenter,
+#   ]
+# }
 
-data "http" "machines" {
-  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_machines.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "machines" {
-  count     = var.enable_manifest_karpenter ? 1 : 0
-  yaml_body = data.http.machines.body
+# data "http" "machines" {
+#   url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_machines.yaml"
+#   request_headers = {
+#     Accept = "text/plain"
+#   }
+# }
+# resource "kubectl_manifest" "machines" {
+#   count     = var.enable_manifest_karpenter ? 1 : 0
+#   yaml_body = data.http.machines.body
 
-  depends_on = [
-    module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
-  ]
-}
+#   depends_on = [
+#     module.eks.cluster,
+#     module.eks_blueprints_addons.karpenter,
+#   ]
+# }
 
-data "http" "awsnodetemplates" {
-  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.k8s.aws_awsnodetemplates.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "awsnodetemplates" {
-  count     = var.enable_manifest_karpenter ? 1 : 0
-  yaml_body = data.http.awsnodetemplates.body
+# data "http" "awsnodetemplates" {
+#   url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.k8s.aws_awsnodetemplates.yaml"
+#   request_headers = {
+#     Accept = "text/plain"
+#   }
+# }
+# resource "kubectl_manifest" "awsnodetemplates" {
+#   count     = var.enable_manifest_karpenter ? 1 : 0
+#   yaml_body = data.http.awsnodetemplates.body
 
-  depends_on = [
-    module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
-  ]
-}
+#   depends_on = [
+#     module.eks.cluster,
+#     module.eks_blueprints_addons.karpenter,
+#   ]
+# }
 
 data "http" "nodepools" {
   url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.sh_nodepools.yaml"
