@@ -201,7 +201,7 @@ module "eks_blueprints_addons_system" {
     values = setunion(var.config_argocd, [templatefile("${path.module}/helm/argocd/values.yaml", {
       global_log_format      = "json"
       tags_system            = var.tags["System"]
-      ingress_enabled        = true
+      ingress_enabled        = var.certificate != null ? true : false
       ingress_grpc_enabled   = true
       server_metrics_enabled = true
       ingress_name           = local.argocd_ingress
