@@ -119,6 +119,10 @@ variable "enable_manifest_karpenter" {
   type    = bool
   default = false
 }
+variable "enable_manifest_karpenter_crds" {
+  type    = bool
+  default = false
+}
 variable "enable_crossplane" {
   type    = bool
   default = false

@@ -62,7 +62,7 @@ data "http" "nodepools" {
   }
 }
 resource "kubectl_manifest" "nodepools" {
-  count     = var.enable_manifest_karpenter ? 1 : 0
+  count     = var.enable_manifest_karpenter_crds ? 1 : 0
   yaml_body = data.http.nodepools.body
 
   depends_on = [
@@ -78,7 +78,7 @@ data "http" "nodeclaims" {
   }
 }
 resource "kubectl_manifest" "nodeclaims" {
-  count     = var.enable_manifest_karpenter ? 1 : 0
+  count     = var.enable_manifest_karpenter_crds ? 1 : 0
   yaml_body = data.http.nodeclaims.body
 
   depends_on = [
@@ -94,7 +94,7 @@ data "http" "ec2nodeclasses" {
   }
 }
 resource "kubectl_manifest" "ec2nodeclasses" {
-  count     = var.enable_manifest_karpenter ? 1 : 0
+  count     = var.enable_manifest_karpenter_crds ? 1 : 0
   yaml_body = data.http.ec2nodeclasses.body
 
   depends_on = [
@@ -197,11 +197,5 @@ YAML
   depends_on = [
     module.eks.cluster,
     module.eks_blueprints_addons.karpenter,
-    # kubectl_manifest.provisioners,
-    # kubectl_manifest.machines,
-    # kubectl_manifest.awsnodetemplates,
-    kubectl_manifest.nodepools,
-    kubectl_manifest.nodeclaims,
-    kubectl_manifest.ec2nodeclasses
   ]
 }
