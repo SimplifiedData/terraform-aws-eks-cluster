@@ -55,53 +55,53 @@ locals {
 #   ]
 # }
 
-data "http" "nodepools" {
-  url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.sh_nodepools.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "nodepools" {
-  count     = var.enable_manifest_karpenter_crds ? 1 : 0
-  yaml_body = data.http.nodepools.body
+# data "http" "nodepools" {
+#   url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.sh_nodepools.yaml"
+#   request_headers = {
+#     Accept = "text/plain"
+#   }
+# }
+# resource "kubectl_manifest" "nodepools" {
+#   count     = var.enable_manifest_karpenter_crds ? 1 : 0
+#   yaml_body = data.http.nodepools.body
 
-  depends_on = [
-    module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
-  ]
-}
+#   depends_on = [
+#     module.eks.cluster,
+#     module.eks_blueprints_addons.karpenter,
+#   ]
+# }
 
-data "http" "nodeclaims" {
-  url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "nodeclaims" {
-  count     = var.enable_manifest_karpenter_crds ? 1 : 0
-  yaml_body = data.http.nodeclaims.body
+# data "http" "nodeclaims" {
+#   url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
+#   request_headers = {
+#     Accept = "text/plain"
+#   }
+# }
+# resource "kubectl_manifest" "nodeclaims" {
+#   count     = var.enable_manifest_karpenter_crds ? 1 : 0
+#   yaml_body = data.http.nodeclaims.body
 
-  depends_on = [
-    module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
-  ]
-}
+#   depends_on = [
+#     module.eks.cluster,
+#     module.eks_blueprints_addons.karpenter,
+#   ]
+# }
 
-data "http" "ec2nodeclasses" {
-  url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "ec2nodeclasses" {
-  count     = var.enable_manifest_karpenter_crds ? 1 : 0
-  yaml_body = data.http.ec2nodeclasses.body
+# data "http" "ec2nodeclasses" {
+#   url = "https://raw.githubusercontent.com/aws/karpenter/v0.35.1/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
+#   request_headers = {
+#     Accept = "text/plain"
+#   }
+# }
+# resource "kubectl_manifest" "ec2nodeclasses" {
+#   count     = var.enable_manifest_karpenter_crds ? 1 : 0
+#   yaml_body = data.http.ec2nodeclasses.body
 
-  depends_on = [
-    module.eks.cluster,
-    module.eks_blueprints_addons.karpenter,
-  ]
-}
+#   depends_on = [
+#     module.eks.cluster,
+#     module.eks_blueprints_addons.karpenter,
+#   ]
+# }
 
 ##==================================================================
 ## KARPENTER Provision Node use VERSION 0.35.x
