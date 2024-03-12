@@ -197,9 +197,9 @@ YAML
   depends_on = [
     module.eks.cluster,
     module.eks_blueprints_addons.karpenter,
-    kubectl_manifest.provisioners,
-    kubectl_manifest.machines,
-    kubectl_manifest.awsnodetemplates,
+    # kubectl_manifest.provisioners,
+    # kubectl_manifest.machines,
+    # kubectl_manifest.awsnodetemplates,
     kubectl_manifest.nodepools,
     kubectl_manifest.nodeclaims,
     kubectl_manifest.ec2nodeclasses
