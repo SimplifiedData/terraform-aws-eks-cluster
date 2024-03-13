@@ -21,13 +21,8 @@ module "eks_blueprints_addons" {
       replicas     = var.environment == "production" ? 3 : 2
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
     })]
-    role_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
   }
-  karpenter_enable_spot_termination = true
-  karpenter_node = {
-    # create_instance_profile = true
+   karpenter_node = {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
