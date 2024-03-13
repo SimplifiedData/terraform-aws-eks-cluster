@@ -15,8 +15,8 @@ module "eks_blueprints_addons" {
   karpenter = {
     chart_version       = local.karpenter["version"]
     # repository          = "oci://public.ecr.aws/karpenter/karpenter-crd"
-    # repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-    # repository_password = data.aws_ecrpublic_authorization_token.token.password
+    repository_username = data.aws_ecrpublic_authorization_token.token.user_name
+    repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
       replicas     = var.environment == "production" ? 3 : 2
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
