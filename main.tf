@@ -129,9 +129,11 @@ module "eks" {
   cluster_version                = try(var.cluster_version, local.cluster_version)
   cluster_endpoint_public_access = true
 
+  enable_cluster_creator_admin_permissions = true
+
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
-
+  control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
