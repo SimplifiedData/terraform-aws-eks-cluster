@@ -137,7 +137,11 @@
       "Sid": "AllowPricingReadActions",
       "Effect": "Allow",
       "Resource": "*",
-      "Action": "pricing:GetProducts"
+      "Action": [
+        "pricing:DescribeServices",
+        "pricing:GetAttributeValues",
+        "pricing:GetProducts"
+      ]
     },
     {
       "Sid": "AllowInterruptionQueueActions",
