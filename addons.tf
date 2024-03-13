@@ -11,7 +11,7 @@ module "eks_blueprints_addons" {
 
   # [ Karpenter ] ============================================================================##
   enable_karpenter                           = true
-  karpenter_enable_instance_profile_creation = true
+  karpenter_enable_instance_profile_creation = false
   karpenter = {
     chart_version       = local.karpenter["version"]
     # repository          = "oci://public.ecr.aws/karpenter/karpenter-crd"
