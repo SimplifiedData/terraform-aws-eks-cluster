@@ -13,7 +13,7 @@ module "eks_blueprints_addons" {
   enable_karpenter                           = true
   karpenter_enable_instance_profile_creation = false
   karpenter = {
-    chart_version       = local.karpenter["version"]
+    chart_version = local.karpenter["version"]
     # repository          = "oci://public.ecr.aws/karpenter/karpenter-crd"
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
@@ -22,7 +22,7 @@ module "eks_blueprints_addons" {
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
     })]
   }
-   karpenter_node = {
+  karpenter_node = {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -109,7 +109,7 @@ module "eks_blueprints_addons" {
     })])
   }
   ##==========================================================================================##
-  
+
 }
 
 module "eks_blueprints_addons_system" {
@@ -129,9 +129,9 @@ module "eks_blueprints_addons_system" {
         # computeType = "Fargate"
         nodeSelector = {
           "kubernetes.io/arch" = "arm64"
-          system      = var.tags["System"]
-          manage-team = "devops"
-          namespace   = "kube-system"
+          system               = var.tags["System"]
+          manage-team          = "devops"
+          namespace            = "kube-system"
         }
         tolerations = [
           {
@@ -160,9 +160,9 @@ module "eks_blueprints_addons_system" {
         controller = {
           nodeSelector = {
             "kubernetes.io/arch" = "arm64"
-            system      = var.tags["System"]
-            manage-team = "devops"
-            namespace   = "kube-system"
+            system               = var.tags["System"]
+            manage-team          = "devops"
+            namespace            = "kube-system"
           }
           tolerations = [
             {
