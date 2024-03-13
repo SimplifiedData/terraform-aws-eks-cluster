@@ -180,7 +180,7 @@ module "eks" {
 }
 module "eksawsauth" {
   source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version = "20.8.2"
+  version = "~> 20.0"
 
   manage_aws_auth_configmap = true
   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
