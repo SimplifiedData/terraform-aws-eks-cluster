@@ -34,42 +34,42 @@ locals {
     }
   ]
 
-  cluster_version    = 1.29
+  cluster_version    = 1.28
   ingress_ssl_policy = "ELBSecurityPolicy-TLS13-1-3-2021-06"
 
   #============================================
   ## ADDON Version
   #============================================
   karpenter = {
-    version = "0.35.0"
+    version = "v0.31.2"
   }
   argocd = {
-    version = "6.5.1"
+    version = "5.51.1"
   }
   # __________MOVE TO ArgoCD__________
   aws_load_balancer_controller = {
-    version = "1.7.0"
+    version = "1.6.0"
   }
   cluster_proportional_autoscaler = {
     version = "1.1.0"
   }
   metrics-server = {
-    version = "3.11.0"
+    version = "3.10.0"
   }
   kube_prometheus_stack = {
-    version = "56.21.0"
+    version = "52.1.0"
   }
   argo_workflows = {
-    version = "0.40.13"
+    version = "0.33.2"
   }
   argo_event = {
-    version = "2.4.2"
+    version = "2.4.1"
   }
   argo_rollout = {
-    version = "2.34.2"
+    version = "2.32.0"
   }
   crossplane = {
-    version = "1.14.6-up.1"
+    version = "v1.13.2-up.2"
   }
   #___________________________________
 }
@@ -78,9 +78,6 @@ locals {
 # Get Subnet ID and VPC
 #============================================
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_name
-}
-data "aws_eks_cluster" "this" {
   name = module.eks.cluster_name
 }
 data "aws_subnets" "app" {
@@ -123,25 +120,57 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.2"
+  version = "~> 19.0"
 
   cluster_name                   = var.cluster_name
-  cluster_version                = try(var.cluster_version, local.cluster_version)
+  cluster_version                = try(local.cluster_version, var.cluster_version)
   cluster_endpoint_public_access = true
-
-  enable_cluster_creator_admin_permissions = true
 
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
-  # control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
+
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
 
+  manage_aws_auth_configmap = true
+  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
+    [
+      {
+        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+      }
+    ]
+  )
+
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
+  # eks_managed_node_groups = {
+  #   mg_5 = {
+  #     node_group_name = "managed-ondemand"
+  #     instance_types  = ["m4.large", "m5.large", "m5a.large", "m5ad.large", "m5d.large"]
 
+  #     create_security_group = false
+
+  #     subnet_ids   = data.aws_subnets.nonexpose.ids
+  #     max_size     = 2
+  #     desired_size = 2
+  #     min_size     = 2
+
+  #     # Launch template configuration
+  #     create_launch_template = true              # false will use the default launch template
+  #     launch_template_os     = "amazonlinux2eks" # amazonlinux2eks or bottlerocket
+
+  #     labels = {
+  #       intent = "control-apps"
+  #     }
+  #   }
+  # }
   cluster_enabled_log_types              = ["audit", "api"]
   cloudwatch_log_group_retention_in_days = 14
 
@@ -158,24 +187,7 @@ module "eks" {
     "karpenter.sh/discovery" = var.cluster_name
   })
 }
-module "eksawsauth" {
-  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version = "20.8.2"
 
-  manage_aws_auth_configmap = true
-  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-    [
-      {
-        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
-    ]
-  )
- }
 #============================================
 # Tag VPC, Tested on awscli 2.9.8           #
 #============================================
