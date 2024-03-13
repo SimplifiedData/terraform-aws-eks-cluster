@@ -123,45 +123,37 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.2"
+  version = "~> 19.0"
 
   cluster_name                   = var.cluster_name
-  cluster_version                = try(var.cluster_version, local.cluster_version)
+  cluster_version                = try(local.cluster_version, var.cluster_version)
   cluster_endpoint_public_access = true
-
-  enable_cluster_creator_admin_permissions = true
 
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
-  # control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
+
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
 
+  manage_aws_auth_configmap = true
+  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
+    [
+      {
+        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+      }
+    ]
+  )
+
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
-  # eks_managed_node_groups = {
-  #   mg_5 = {
-  #     node_group_name = "managed-ondemand"
-  #     instance_types  = ["m4.large", "m5.large", "m5a.large", "m5ad.large", "m5d.large"]
 
-  #     create_security_group = false
-
-  #     subnet_ids   = data.aws_subnets.nonexpose.ids
-  #     max_size     = 2
-  #     desired_size = 2
-  #     min_size     = 2
-
-  #     # Launch template configuration
-  #     create_launch_template = true              # false will use the default launch template
-  #     launch_template_os     = "amazonlinux2eks" # amazonlinux2eks or bottlerocket
-
-  #     labels = {
-  #       intent = "control-apps"
-  #     }
-  #   }
-  # }
   cluster_enabled_log_types              = ["audit", "api"]
   cloudwatch_log_group_retention_in_days = 14
 
