@@ -25,7 +25,7 @@ module "eks_blueprints_addons" {
     #   AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     # }
   }
-  # karpenter_enable_spot_termination = true
+  karpenter_enable_spot_termination = true
   karpenter_node = {
     # create_instance_profile = true
     iam_role_additional_policies = {
