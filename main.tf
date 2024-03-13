@@ -170,24 +170,24 @@ module "eks" {
     "karpenter.sh/discovery" = var.cluster_name
   })
 }
-module "eksawsauth" {
-  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version = "~> 20.0"
+# module "eksawsauth" {
+#   source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
+#   version = "~> 20.0"
 
-  manage_aws_auth_configmap = true
-  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-    [
-      {
-        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
-    ]
-  )
- }
+#   manage_aws_auth_configmap = true
+#   aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
+#     [
+#       {
+#         rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+#         username = "system:node:{{EC2PrivateDNSName}}"
+#         groups = [
+#           "system:bootstrappers",
+#           "system:nodes",
+#         ]
+#       }
+#     ]
+#   )
+#  }
 #============================================
 # Tag VPC, Tested on awscli 2.9.8           #
 #============================================
