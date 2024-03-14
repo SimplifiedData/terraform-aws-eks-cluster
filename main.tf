@@ -120,7 +120,7 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.3"
+  version = "~> 19.0"
 
   cluster_name                   = var.cluster_name
   cluster_version                = try(local.cluster_version, var.cluster_version)
@@ -133,19 +133,19 @@ module "eks" {
   create_cluster_security_group            = false
   create_node_security_group               = false
   # enable_cluster_creator_admin_permissions = true
-  # manage_aws_auth_configmap = true
-  # aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-  #   [
-  #     {
-  #       rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-  #       username = "system:node:{{EC2PrivateDNSName}}"
-  #       groups = [
-  #         "system:bootstrappers",
-  #         "system:nodes",
-  #       ]
-  #     }
-  #   ]
-  # )
+  manage_aws_auth_configmap = true
+  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
+    [
+      {
+        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+      }
+    ]
+  )
 
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -165,25 +165,6 @@ module "eks" {
     Name                     = var.cluster_name
     "karpenter.sh/discovery" = var.cluster_name
   })
-}
-
-module "eks_aws_auth" {
-  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version = "20.8.3"
-
-  manage_aws_auth_configmap = true
-  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-    [
-      {
-        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
-    ]
-  )
 }
 
 #============================================
