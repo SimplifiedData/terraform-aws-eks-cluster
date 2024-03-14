@@ -44,32 +44,32 @@ locals {
     version = "0.35.0"
   }
   argocd = {
-    version = "5.51.1"
+    version = "6.5.1"
   }
   # __________MOVE TO ArgoCD__________
   aws_load_balancer_controller = {
-    version = "1.6.0"
+    version = "1.7.0"
   }
   cluster_proportional_autoscaler = {
     version = "1.1.0"
   }
   metrics-server = {
-    version = "3.10.0"
+    version = "3.11.0"
   }
   kube_prometheus_stack = {
-    version = "52.1.0"
+    version = "56.21.0"
   }
   argo_workflows = {
-    version = "0.33.2"
+    version = "0.40.13"
   }
   argo_event = {
-    version = "2.4.1"
+    version = "2.4.2"
   }
   argo_rollout = {
-    version = "2.32.0"
+    version = "2.34.2"
   }
   crossplane = {
-    version = "v1.13.2-up.2"
+    version = "1.14.6-up.1"
   }
   #___________________________________
 }
