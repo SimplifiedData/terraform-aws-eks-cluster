@@ -132,7 +132,7 @@ module "eks" {
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group            = false
   create_node_security_group               = false
-  enable_cluster_creator_admin_permissions = true
+  # enable_cluster_creator_admin_permissions = true
   # manage_aws_auth_configmap = true
   # aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
   #   [
