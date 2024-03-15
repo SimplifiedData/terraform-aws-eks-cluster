@@ -7,10 +7,10 @@ locals {
   subnet_ids_non        = "%{for i, v in data.aws_subnets.nonexpose.ids}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{endfor}"
   addon_enable_password = var.enable_argocd || var.enable_grafana_ingress == true
   env                   = var.environment != "dev" ? "" : var.environment
-  argocd_ingress        = "k8s-argocd-${var.name_service}-${local.env}${random_string.default.result}"
-  grafana_ingress       = "k8s-grafana-${var.name_service}-${local.env}${random_string.default.result}"
-  argowf_ingress        = "k8s-argowf-${var.name_service}-${local.env}${random_string.default.result}"
-  argorollouts_ingress  = "k8s-argo-ro-${var.name_service}-${local.env}${random_string.default.result}"
+  argocd_ingress        = var.argcd_ingress_name == null ? "k8s-argocd-${var.name_service}-${local.env}${random_string.default.result}" : var.argcd_ingress_name
+  grafana_ingress       = var.grafana_ingress_name == null ? "k8s-grafana-${var.name_service}-${local.env}${random_string.default.result}" : var.grafana_ingress_name
+  argowf_ingress        = var.argowf_ingress_name == null ? "k8s-argowf-${var.name_service}-${local.env}${random_string.default.result}" : var.argowf_ingress_name 
+  argorollouts_ingress  = var.argorollouts_ingress_name == null ? "k8s-argo-ro-${var.name_service}-${local.env}${random_string.default.result}" : var.argorollouts_ingress_name
   dns_suffix            = data.aws_partition.current.dns_suffix
   partition             = data.aws_partition.current.partition
   account_dev = [
