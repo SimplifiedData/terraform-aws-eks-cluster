@@ -9,7 +9,7 @@ locals {
   env                   = var.environment != "dev" ? "" : var.environment
   argocd_ingress        = var.argcd_ingress_name == null ? "k8s-argocd-${var.name_service}-${local.env}${random_string.default.result}" : var.argcd_ingress_name
   grafana_ingress       = var.grafana_ingress_name == null ? "k8s-grafana-${var.name_service}-${local.env}${random_string.default.result}" : var.grafana_ingress_name
-  argowf_ingress        = var.argowf_ingress_name == null ? "k8s-argowf-${var.name_service}-${local.env}${random_string.default.result}" : var.argowf_ingress_name 
+  argowf_ingress        = var.argowf_ingress_name == null ? "k8s-argowf-${var.name_service}-${local.env}${random_string.default.result}" : var.argowf_ingress_name
   argorollouts_ingress  = var.argorollouts_ingress_name == null ? "k8s-argo-ro-${var.name_service}-${local.env}${random_string.default.result}" : var.argorollouts_ingress_name
   dns_suffix            = data.aws_partition.current.dns_suffix
   partition             = data.aws_partition.current.partition
@@ -41,35 +41,35 @@ locals {
   ## ADDON Version
   #============================================
   karpenter = {
-    version = "0.35.1"
+    version = "0.35.2"
   }
   argocd = {
-    version = "6.5.1"
+    version = "6.7.3"
   }
   # __________MOVE TO ArgoCD__________
   aws_load_balancer_controller = {
-    version = "1.7.0"
+    version = "1.7.2"
   }
   cluster_proportional_autoscaler = {
     version = "1.1.0"
   }
   metrics-server = {
-    version = "3.11.0"
+    version = "3.12.0"
   }
   kube_prometheus_stack = {
-    version = "56.21.0"
+    version = "57.1.1"
   }
   argo_workflows = {
-    version = "0.40.13"
+    version = "0.41.0"
   }
   argo_event = {
-    version = "2.4.2"
+    version = "2.4.4"
   }
   argo_rollout = {
-    version = "2.34.2"
+    version = "2.35.0"
   }
   crossplane = {
-    version = "1.14.6-up.1"
+    version = "1.15.1-up.1"
   }
   #___________________________________
 }
