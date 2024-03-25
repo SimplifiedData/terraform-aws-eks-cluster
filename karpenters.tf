@@ -4,9 +4,9 @@ locals {
   size     = var.environment == "production" ? "medium,large,xlarge,2xlarge,4xlarge" : "medium,large,xlarge"
 }
 
-##=================================
-## KARPENTER New VERSION 0.32.x
-##=================================
+##==================================================================
+## KARPENTER Provision Node use VERSION 0.35.x
+##==================================================================
 resource "kubectl_manifest" "default_provisioner" {
   count     = var.enable_manifest_karpenter ? 1 : 0
   yaml_body = <<YAML
@@ -75,6 +75,7 @@ metadata:
   name: default
 spec:
   amiFamily: AL2
+  associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
         Name: "*nonexpose*"
@@ -99,3 +100,4 @@ YAML
     module.eks_blueprints_addons.karpenter,
   ]
 }
+

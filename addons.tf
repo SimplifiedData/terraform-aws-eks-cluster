@@ -1,6 +1,6 @@
 module "eks_blueprints_addons" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.10.1"
+  version = "1.16.0"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -13,20 +13,16 @@ module "eks_blueprints_addons" {
   enable_karpenter                           = true
   karpenter_enable_instance_profile_creation = false
   karpenter = {
-    chart_version       = local.karpenter["version"]
+    chart_version = local.karpenter["version"]
+    # repository          = "oci://public.ecr.aws/karpenter/karpenter-crd"
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
       replicas     = var.environment == "production" ? 3 : 2
       requests_cpu = var.environment == "production" ? "1000m" : "500m"
     })]
-    # role_policies = {
-    #   AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    # }
   }
-  karpenter_enable_spot_termination = true
   karpenter_node = {
-    # create_instance_profile = true
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -113,11 +109,12 @@ module "eks_blueprints_addons" {
     })])
   }
   ##==========================================================================================##
+
 }
 
 module "eks_blueprints_addons_system" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.10.1"
+  version = "1.16.0"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -131,9 +128,10 @@ module "eks_blueprints_addons_system" {
       configuration_values = jsonencode({
         # computeType = "Fargate"
         nodeSelector = {
-          system      = var.tags["System"]
-          manage-team = "devops"
-          namespace   = "kube-system"
+          "kubernetes.io/arch" = "arm64"
+          system               = var.tags["System"]
+          manage-team          = "devops"
+          namespace            = "kube-system"
         }
         tolerations = [
           {
@@ -161,9 +159,10 @@ module "eks_blueprints_addons_system" {
       configuration_values = jsonencode({
         controller = {
           nodeSelector = {
-            system      = var.tags["System"]
-            manage-team = "devops"
-            namespace   = "kube-system"
+            "kubernetes.io/arch" = "arm64"
+            system               = var.tags["System"]
+            manage-team          = "devops"
+            namespace            = "kube-system"
           }
           tolerations = [
             {
@@ -198,7 +197,7 @@ module "eks_blueprints_addons_system" {
     values = setunion(var.config_argocd, [templatefile("${path.module}/helm/argocd/values.yaml", {
       global_log_format      = "json"
       tags_system            = var.tags["System"]
-      ingress_enabled        = true
+      ingress_enabled        = var.certificate != null ? true : false
       ingress_grpc_enabled   = true
       server_metrics_enabled = true
       ingress_name           = local.argocd_ingress

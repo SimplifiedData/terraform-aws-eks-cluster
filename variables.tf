@@ -54,7 +54,22 @@ variable "metrics" {
     namespace  = "kube-system"
   }
 }
-
+variable "argcd_ingress_name" {
+  type = string
+  default = null
+}
+variable "grafana_ingress_name" {
+  type = string
+  default = null
+}
+variable "argowf_ingress_name" {
+  type = string
+  default = null
+}
+variable "argorollouts_ingress_name" {
+  type = string
+  default = null
+}
 variable "enable_eksaddons" {
   type    = bool
   default = false
@@ -116,6 +131,10 @@ variable "config_argo_rollouts" {
   default = []
 }
 variable "enable_manifest_karpenter" {
+  type    = bool
+  default = false
+}
+variable "enable_manifest_karpenter_crds" {
   type    = bool
   default = false
 }
