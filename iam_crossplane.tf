@@ -168,7 +168,7 @@ resource "aws_iam_role_policy_attachment" "AWSGSStorageFullPolicy" {
 resource "aws_iam_policy" "CrossplaneControllerPolicy" {
   count = var.enable_crossplane ? 1 : 0
 
-  name        = "AWSGSCrossplanePolicy"
+  name        = "AWSGSCrossplanePolicy-${random_string.default.result}"
   path        = "/"
   description = "Policy for clossplane resource provider"
   policy      = templatefile("${path.module}/policys/crossplane_policy.json", {})
