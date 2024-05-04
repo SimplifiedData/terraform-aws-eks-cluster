@@ -47,8 +47,8 @@ data "aws_iam_policy_document" "scm_default" {
       test     = "StringNotLike"
       variable = "aws:PrincipalArn"
       values = setunion(var.condition_values, [
-        # "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevRole",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
+        # "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevRole",
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole",
       ])
     }
@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "scm_default" {
     principals {
       type = "AWS"
       identifiers = setunion(var.condition_values, [
-        # "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole",
       ])
     }

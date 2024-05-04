@@ -55,19 +55,19 @@ variable "metrics" {
   }
 }
 variable "argcd_ingress_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "grafana_ingress_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "argowf_ingress_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "argorollouts_ingress_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "enable_eksaddons" {
@@ -178,4 +178,30 @@ variable "aws_load_balancer_controller" {
   description = "AWS Load Balancer Controller add-on configuration values"
   type        = any
   default     = {}
+}
+
+variable "enable_alb_controller" {
+  default = false
+}
+
+variable "argocd_version" {
+  default = ""
+}
+variable "aws_lb_controller_version" {
+  default = ""
+}
+variable "metrics_server_version" {
+  default = ""
+}
+variable "kube_prometheus_stack_version" {
+  default = ""
+}
+variable "argo_workflows_version" {
+  default = ""
+}
+variable "argo_events_version" {
+  default = ""
+}
+variable "argo_rollouts_version" {
+  default = ""
 }

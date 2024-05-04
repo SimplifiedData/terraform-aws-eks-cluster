@@ -207,5 +207,5 @@ output "crossplane_role" {
 
 ### IAM ROlE ALB Controller
 output "albcontroller_role" {
-  value = aws_iam_role.albrole.arn
+  value = aws_iam_role.albrole[*].arn
 }
