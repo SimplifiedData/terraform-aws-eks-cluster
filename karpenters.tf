@@ -77,7 +77,9 @@ spec:
   amiFamily: AL2
   associatePublicIPAddress: false
   subnetSelectorTerms:
-    - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
+    - tags:
+        Name: "*isearch-gs-sds-sss-dev-nonexpose*"
+    # - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
   securityGroupSelectorTerms:
     - tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
