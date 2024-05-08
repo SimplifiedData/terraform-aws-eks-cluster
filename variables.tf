@@ -1,4 +1,5 @@
 variable "tags" { type = any }
+variable "aws_account_name" { type = string }
 variable "environment" { type = string }
 variable "name_service" {
   type    = string
