@@ -18,8 +18,9 @@ module "eks_blueprints_addons" {
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
-      replicas     = var.environment == "production" ? 3 : 2
-      requests_cpu = var.environment == "production" ? "1000m" : "500m"
+      replicas        = var.environment == "production" ? 3 : 2
+      requests_cpu    = var.environment == "production" ? "1000m" : "500m"
+      requests_memory = var.environment == "production" ? "2Gi" : "1Gi"
     })]
   }
   karpenter_node = {
@@ -33,7 +34,7 @@ module "eks_blueprints_addons" {
   # [ LoadBalancer_Controller ] ==============================================================##
   enable_aws_load_balancer_controller = var.enable_load_balancer_controller
   aws_load_balancer_controller = {
-    chart_version = local.aws_load_balancer_controller["version"]
+    chart_version = try(var.aws_lb_controller_version, local.aws_load_balancer_controller["version"])
     values = [templatefile("${path.module}/helm/load_balancer_controller/values.yaml", {
       vpc_id = var.vpc_id
     })]
@@ -42,14 +43,14 @@ module "eks_blueprints_addons" {
   # [ Metrics_server ]
   enable_metrics_server = var.enable_metrics_server
   metrics_server = {
-    chart_version = local.metrics-server["version"]
+    chart_version = try(var.metrics_server_version, local.metrics-server["version"])
     values        = [templatefile("${path.module}/helm/metrics_server/values.yaml", {})]
   }
   ##==========================================================================================##
   # [ Prometheus and Grafana ] ===============================================================##
   enable_kube_prometheus_stack = var.enable_kube_prometheus_stack
   kube_prometheus_stack = {
-    chart_version = local.kube_prometheus_stack["version"]
+    chart_version = try(var.kube_prometheus_stack_version, local.kube_prometheus_stack["version"])
     values = setunion(var.config_prometheus_stack, [templatefile("${path.module}/helm/kube_prometheus_stack/values.yaml", {
       ingress_enabled    = var.enable_grafana_ingress
       grafana_password   = try(random_password.default["grafana"].result, "")
@@ -68,7 +69,7 @@ module "eks_blueprints_addons" {
   # [--- ARGO Workflows ---] =================================================================##
   enable_argo_workflows = var.enable_argo_workflows
   argo_workflows = {
-    chart_version = local.argo_workflows["version"]
+    chart_version = try(var.argo_workflows_version, local.argo_workflows["version"])
     values = setunion(var.config_argo_workflow, [templatefile("${path.module}/helm/argo_workflow/values.yaml", {
       ingress_enabled    = true
       ingress_name       = local.argowf_ingress
@@ -86,14 +87,14 @@ module "eks_blueprints_addons" {
   # [--- ARGO Event ---] =====================================================================##
   enable_argo_events = var.enable_argo_events
   argo_events = {
-    chart_version = local.argo_event["version"]
+    chart_version = try(var.argo_events_version, local.argo_event["version"])
     values        = setunion(var.config_argo_event, [templatefile("${path.module}/helm/argoevent/values.yaml", {})])
   }
   ##==========================================================================================##
   # [--- ARGO rollouts ---] ==================================================================##
   enable_argo_rollouts = var.enable_argo_rollouts
   argo_rollouts = {
-    chart_version = local.argo_rollout["version"]
+    chart_version = try(var.argo_rollouts_version, local.argo_rollout["version"])
     values = setunion(var.config_argo_rollouts, [templatefile("${path.module}/helm/argorollouts/values.yaml", {
       enable_dashboard   = true #var.enable_argo_rollouts_dashboard
       ingress_enabled    = true #var.enable_argo_rollouts_dashboard
@@ -180,8 +181,9 @@ module "eks_blueprints_addons_system" {
   ##==========================================================================================##
   # [--- ARGO CD ---] ========================================================================##
   enable_argocd = var.enable_argocd
+
   argocd = {
-    chart_version = local.argocd["version"]
+    chart_version = try(var.argocd_version, local.argocd["version"])
     set_sensitive = [{
       name  = "configs.secret.argocdServerAdminPassword"
       value = try(bcrypt(random_password.default["argocd"].result), "")

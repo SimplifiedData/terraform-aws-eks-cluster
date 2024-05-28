@@ -2,4 +2,5 @@ replicas: ${replicas}
 controller:
   resources:
     requests:
-      cpu:  ${requests_cpu}
+      cpu: ${requests_cpu}
+      memory: ${requests_memory}

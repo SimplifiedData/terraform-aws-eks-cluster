@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "assume" {
     condition {
       test = "StringLike"
       values = [
-        "system:serviceaccount:upbound-system:provider-*",
+        "system:serviceaccount:crossplane:provider-*",
       ]
       variable = "${module.eks.oidc_provider}:sub"
     }
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "assume" {
     condition {
       test = "StringLike"
       values = [
-        "system:serviceaccount:upbound-system:rbac-manager",
+        "system:serviceaccount:crossplane:rbac-manager",
       ]
       variable = "${module.eks.oidc_provider}:sub"
     }
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "assume" {
     condition {
       test = "StringLike"
       values = [
-        "system:serviceaccount:upbound-system:upbound-provider-*",
+        "system:serviceaccount:crossplane:upbound-provider-*",
       ]
       variable = "${module.eks.oidc_provider}:sub"
     }
@@ -81,7 +81,7 @@ data "aws_iam_policy_document" "assume" {
     condition {
       test = "StringLike"
       values = [
-        "system:serviceaccount:upbound-system:crossplane",
+        "system:serviceaccount:crossplane:crossplane",
       ]
       variable = "${module.eks.oidc_provider}:sub"
     }
@@ -168,7 +168,7 @@ resource "aws_iam_role_policy_attachment" "AWSGSStorageFullPolicy" {
 resource "aws_iam_policy" "CrossplaneControllerPolicy" {
   count = var.enable_crossplane ? 1 : 0
 
-  name        = "AWSGSCrossplanePolicy"
+  name        = "AWSGSCrossplanePolicy-${random_string.default.result}"
   path        = "/"
   description = "Policy for clossplane resource provider"
   policy      = templatefile("${path.module}/policys/crossplane_policy.json", {})

@@ -2,8 +2,9 @@
 # ALB Controller Role                  #
 #======================================#
 resource "aws_iam_role" "albrole" {
-  name = "alb-controller-${random_string.default.result}" ## [Role]: name
-  assume_role_policy = jsonencode({                       ## [Trust relationships]
+  count = var.enable_alb_controller ? 1 : 0
+  name  = "alb-controller-${random_string.default.result}" ## [Role]: name
+  assume_role_policy = jsonencode({                        ## [Trust relationships]
     "Version" : "2012-10-17",
     "Statement" : [
       {
