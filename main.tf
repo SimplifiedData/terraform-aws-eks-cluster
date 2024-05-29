@@ -44,7 +44,7 @@ locals {
     version = "0.36.1"
   }
   argocd = {
-    version = "6.7.3"
+    version = "6.11.1"
   }
   # __________MOVE TO ArgoCD__________
   aws_load_balancer_controller = {
@@ -119,8 +119,10 @@ resource "random_string" "default" {
 # Module EKS Cluster                        #
 #============================================
 module "eks" {
+  # source  = "git@github.com:clowdhaus/terraform-aws-eks-v20-migrate.git?ref=3f626cc493606881f38684fc366688c36571c5c5"
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "19.21.0"
+  # version = "~> 20.0"
 
   cluster_name                   = var.cluster_name
   cluster_version                = try(local.cluster_version, var.cluster_version)
