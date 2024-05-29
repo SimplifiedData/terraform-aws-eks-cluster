@@ -77,28 +77,10 @@ module "eks" {
   subnet_ids = data.aws_subnets.nonexpose.ids
   control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
   # Fargate profiles use the cluster primary security group so these are not utilized
-  # create_cluster_security_group = false
-  # create_node_security_group    = false
+  create_cluster_security_group = var.enable_node_group == true ? true : false
+  create_node_security_group    = var.enable_node_group == true ? true : false
 
-  eks_managed_node_groups = {
-    thotsakan = {
-      min_size     = 1
-      max_size     = 10
-      desired_size = 1
-
-      instance_types = ["t3.large"]
-      capacity_type  = "SPOT"
-      taints = {
-        # This Taint aims to keep just EKS Addons and Karpenter running on this MNG
-        # The pods that do not tolerate this taint should run on nodes created by Karpenter
-        addons = {
-          key    = "CriticalAddonsOnly"
-          value  = "true"
-          effect = "NO_SCHEDULE"
-        },
-      }
-    }
-  }
+  eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : {}
 
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
