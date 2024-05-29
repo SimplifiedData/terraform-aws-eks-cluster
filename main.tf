@@ -17,7 +17,7 @@ module "eks" {
   # Terraform identity admin access to cluster wich will allow deploying resources (Karpenter) into the cluster.
   enable_cluster_creator_admin_permissions = true
   cluster_endpoint_public_access           = true
-
+  authentication_mode = "API_AND_CONFIG_MAP"
   cluster_addons = {
     coredns = {
       configuration_values = jsonencode({
