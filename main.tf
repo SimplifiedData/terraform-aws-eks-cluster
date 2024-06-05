@@ -44,7 +44,9 @@ locals {
     version = "0.36.1"
   }
   argocd = {
-    version = "6.11.1"
+    # Updated to use ArgoCD version greater than 2.11.0
+    # ArgoCD security code: CVE-2024-31989
+    version = "7.1.1"
   }
   # __________MOVE TO ArgoCD__________
   aws_load_balancer_controller = {
