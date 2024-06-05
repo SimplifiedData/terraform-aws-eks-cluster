@@ -9,7 +9,7 @@ locals {
   argorollouts_ingress  = var.argorollouts_ingress_name == null ? "k8s-argo-ro-${var.name_service}-${local.env}${random_string.default.result}" : var.argorollouts_ingress_name
   dns_suffix            = data.aws_partition.current.dns_suffix
   partition             = data.aws_partition.current.partition
-  account_dev = [
+  account_dev = setunion( var.enable_node_group ? [] : [], [
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole"
       username = "devops-role"
@@ -21,14 +21,14 @@ locals {
       username = "dev-role"
       groups   = ["system:masters"]
     }
-  ]
-  account_prd = [
+  ])
+  account_prd = setunion( var.enable_node_group ? [] : [], [
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole"
       username = "devops-role"
       groups   = ["system:masters"]
     }
-  ]
+  ])
 
   cluster_version    = 1.29
   ingress_ssl_policy = "ELBSecurityPolicy-TLS13-1-3-2021-06"
