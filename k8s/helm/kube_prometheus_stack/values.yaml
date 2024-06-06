@@ -28,6 +28,19 @@ alertmanager:
 
 prometheus:
   prometheusSpec:
+    additionalScrapeConfigs: |
+      - job_name: karpenter
+        kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+            - $KARPENTER_NAMESPACE
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_endpoints_name
+          - __meta_kubernetes_endpoint_port_name
+          action: keep
+          regex: karpenter;http-metrics
     nodeSelector:
       system: sdo
       manage-team: devops
@@ -75,6 +88,33 @@ grafana:
     - key: "devopsMangement"
       operator: "Exists"
       effect: "NoSchedule"
+    dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+  dashboards: 
+    default:
+      capacity-dashboard:
+        url: https://karpenter.sh/v0.36/getting-started/getting-started-with-karpenter/karpenter-capacity-dashboard.json
+      performance-dashboard:
+        url: https://karpenter.sh/v0.36/getting-started/getting-started-with-karpenter/karpenter-performance-dashboard.json
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        version: 1
+        url: http://prometheus-server:80
+      access: proxy
   ingress:
     annotations:
       kubernetes.io/ingress.class: alb
