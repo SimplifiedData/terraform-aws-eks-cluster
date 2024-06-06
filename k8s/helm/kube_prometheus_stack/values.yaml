@@ -28,19 +28,19 @@ alertmanager:
 
 prometheus:
   prometheusSpec:
-    additionalScrapeConfigs:
-      - job_name: karpenter
-        kubernetes_sd_configs:
-        - role: endpoints
-          namespaces:
-            names:
-            - karpenter
-        relabel_configs:
-        - source_labels:
-          - __meta_kubernetes_endpoints_name
-          - __meta_kubernetes_endpoint_port_name
-          action: keep
-          regex: karpenter;http-metrics
+    additionalScrapeConfigs: |
+        - job_name: karpenter
+          kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+              - karpenter
+          relabel_configs:
+          - source_labels:
+            - __meta_kubernetes_endpoints_name
+            - __meta_kubernetes_endpoint_port_name
+            action: keep
+            regex: karpenter;http-metrics
     nodeSelector:
       system: sdo
       manage-team: devops
@@ -113,7 +113,7 @@ grafana:
       - name: Prometheus
         type: prometheus
         version: 1
-        url: http://prometheus-server:80
+        url: http://kube-prometheus-stack-prometheus.kube-prometheus-stack.svc.cluster.local:9090
       access: proxy
   ingress:
     annotations:
