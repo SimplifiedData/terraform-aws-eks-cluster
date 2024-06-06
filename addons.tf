@@ -17,7 +17,7 @@ module "eks_blueprints_addons" {
     # repository          = "oci://public.ecr.aws/karpenter/karpenter-crd"
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
-    values = [templatefile("${path.module}/helm/karpenters/values.yaml", {
+    values = [templatefile("${path.module}/k8s/helm/karpenters/values.yaml", {
       replicas        = var.environment == "production" ? 3 : 2
       requests_cpu    = var.environment == "production" ? "1000m" : "500m"
       requests_memory = var.environment == "production" ? "2Gi" : "1Gi"
@@ -35,7 +35,7 @@ module "eks_blueprints_addons" {
   enable_aws_load_balancer_controller = var.enable_load_balancer_controller
   aws_load_balancer_controller = {
     chart_version = try(var.aws_lb_controller_version, local.aws_load_balancer_controller["version"])
-    values = [templatefile("${path.module}/helm/load_balancer_controller/values.yaml", {
+    values = [templatefile("${path.module}/k8s/helm/load_balancer_controller/values.yaml", {
       vpc_id = var.vpc_id
     })]
   }
@@ -44,14 +44,14 @@ module "eks_blueprints_addons" {
   enable_metrics_server = var.enable_metrics_server
   metrics_server = {
     chart_version = try(var.metrics_server_version, local.metrics-server["version"])
-    values        = [templatefile("${path.module}/helm/metrics_server/values.yaml", {})]
+    values        = [templatefile("${path.module}/k8s/helm/metrics_server/values.yaml", {})]
   }
   ##==========================================================================================##
   # [ Prometheus and Grafana ] ===============================================================##
   enable_kube_prometheus_stack = var.enable_kube_prometheus_stack
   kube_prometheus_stack = {
     chart_version = try(var.kube_prometheus_stack_version, local.kube_prometheus_stack["version"])
-    values = setunion(var.config_prometheus_stack, [templatefile("${path.module}/helm/kube_prometheus_stack/values.yaml", {
+    values = setunion(var.config_prometheus_stack, [templatefile("${path.module}/k8s/helm/kube_prometheus_stack/values.yaml", {
       ingress_enabled    = var.enable_grafana_ingress
       grafana_password   = try(random_password.default["grafana"].result, "")
       ingress_certs_arn  = var.certificate
@@ -70,7 +70,7 @@ module "eks_blueprints_addons" {
   enable_argo_workflows = var.enable_argo_workflows
   argo_workflows = {
     chart_version = try(var.argo_workflows_version, local.argo_workflows["version"])
-    values = setunion(var.config_argo_workflow, [templatefile("${path.module}/helm/argo_workflow/values.yaml", {
+    values = setunion(var.config_argo_workflow, [templatefile("${path.module}/k8s/helm/argo_workflow/values.yaml", {
       ingress_enabled    = true
       ingress_name       = local.argowf_ingress
       ingress_certs_arn  = var.certificate
@@ -88,14 +88,14 @@ module "eks_blueprints_addons" {
   enable_argo_events = var.enable_argo_events
   argo_events = {
     chart_version = try(var.argo_events_version, local.argo_event["version"])
-    values        = setunion(var.config_argo_event, [templatefile("${path.module}/helm/argoevent/values.yaml", {})])
+    values        = setunion(var.config_argo_event, [templatefile("${path.module}/k8s/helm/argoevent/values.yaml", {})])
   }
   ##==========================================================================================##
   # [--- ARGO rollouts ---] ==================================================================##
   enable_argo_rollouts = var.enable_argo_rollouts
   argo_rollouts = {
     chart_version = try(var.argo_rollouts_version, local.argo_rollout["version"])
-    values = setunion(var.config_argo_rollouts, [templatefile("${path.module}/helm/argorollouts/values.yaml", {
+    values = setunion(var.config_argo_rollouts, [templatefile("${path.module}/k8s/helm/argorollouts/values.yaml", {
       enable_dashboard   = true #var.enable_argo_rollouts_dashboard
       ingress_enabled    = true #var.enable_argo_rollouts_dashboard
       ingress_name       = local.argorollouts_ingress
@@ -124,60 +124,60 @@ module "eks_blueprints_addons_system" {
   # We want to wait for the Fargate profiles to be deployed first
   # create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
   # [ Addons For System] =====================================================================##
-  eks_addons = var.enable_eksaddons ? {
-    coredns = {
-      configuration_values = jsonencode({
-        # computeType = "Fargate"
-        nodeSelector = {
-          "kubernetes.io/arch" = "arm64"
-          system               = var.tags["System"]
-          manage-team          = "devops"
-          namespace            = "kube-system"
-        }
-        tolerations = [
-          {
-            key      = "devopsMangement"
-            operator = "Exists"
-            effect   = "NoSchedule"
-          },
-        ]
-        resources = {
-          limits = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-          requests = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-        }
-      })
-    }
-    aws-ebs-csi-driver = {
-      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-      configuration_values = jsonencode({
-        controller = {
-          nodeSelector = {
-            "kubernetes.io/arch" = "arm64"
-            system               = var.tags["System"]
-            manage-team          = "devops"
-            namespace            = "kube-system"
-          }
-          tolerations = [
-            {
-              key      = "devopsMangement"
-              operator = "Exists"
-              effect   = "NoSchedule"
-            },
-          ]
-        }
-      })
-    }
-    vpc-cni    = { most_recent = true }
-    kube-proxy = {}
-  } : {}
+  # eks_addons = var.enable_eksaddons ? {
+  #   coredns = {
+  #     configuration_values = jsonencode({
+  #       # computeType = "Fargate"
+  #       nodeSelector = {
+  #         "kubernetes.io/arch" = "arm64"
+  #         system               = var.tags["System"]
+  #         manage-team          = "devops"
+  #         namespace            = "kube-system"
+  #       }
+  #       tolerations = [
+  #         {
+  #           key      = "devopsMangement"
+  #           operator = "Exists"
+  #           effect   = "NoSchedule"
+  #         },
+  #       ]
+  #       resources = {
+  #         limits = {
+  #           cpu = "0.25"
+  #           # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+  #           memory = "256M"
+  #         }
+  #         requests = {
+  #           cpu = "0.25"
+  #           # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+  #           memory = "256M"
+  #         }
+  #       }
+  #     })
+  #   }
+  #   aws-ebs-csi-driver = {
+  #     service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+  #     configuration_values = jsonencode({
+  #       controller = {
+  #         nodeSelector = {
+  #           "kubernetes.io/arch" = "arm64"
+  #           system               = var.tags["System"]
+  #           manage-team          = "devops"
+  #           namespace            = "kube-system"
+  #         }
+  #         tolerations = [
+  #           {
+  #             key      = "devopsMangement"
+  #             operator = "Exists"
+  #             effect   = "NoSchedule"
+  #           },
+  #         ]
+  #       }
+  #     })
+  #   }
+  #   vpc-cni    = { most_recent = true }
+  #   kube-proxy = {}
+  # } : {}
   ##==========================================================================================##
   # [--- ARGO CD ---] ========================================================================##
   enable_argocd = var.enable_argocd
@@ -196,7 +196,7 @@ module "eks_blueprints_addons_system" {
         name  = "redis-ha.image.repository"
         value = "public.ecr.aws/docker/library/redis"
     }]
-    values = setunion(var.config_argocd, [templatefile("${path.module}/helm/argocd/values.yaml", {
+    values = setunion(var.config_argocd, [templatefile("${path.module}/k8s/helm/argocd/values.yaml", {
       global_log_format      = "json"
       tags_system            = var.tags["System"]
       ingress_enabled        = var.certificate != null ? true : false
@@ -217,7 +217,7 @@ module "eks_blueprints_addons_system" {
   enable_cluster_proportional_autoscaler = var.enable_eksaddons
   cluster_proportional_autoscaler = {
     chart_version = local.cluster_proportional_autoscaler["version"]
-    values        = [templatefile("${path.module}/helm/cluster_proportional_autoscaler/values.yaml", {})]
+    values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
   }
   ##==========================================================================================##
 

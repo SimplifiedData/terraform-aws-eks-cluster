@@ -206,3 +206,11 @@ variable "argo_events_version" {
 variable "argo_rollouts_version" {
   default = ""
 }
+
+variable "enable_node_group" {
+default = false
+}
+variable "manage_node_group" {
+  type        = any
+  default = {}
+}
