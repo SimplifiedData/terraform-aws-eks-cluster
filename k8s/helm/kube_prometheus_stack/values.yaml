@@ -88,7 +88,7 @@ grafana:
     - key: "devopsMangement"
       operator: "Exists"
       effect: "NoSchedule"
-    dashboardProviders:
+  dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1
       providers:
