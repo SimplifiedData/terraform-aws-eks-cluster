@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "argocd" {
     }
 
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [aws_secretsmanager_secret.argocd.arn[count.index]]
+    resources = [aws_secretsmanager_secret.argocd.arn[0]]
   }
   statement {
     sid    = "AdminRole"
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "argocd" {
     }
 
     actions   = ["secretsmanager:*"]
-    resources = [aws_secretsmanager_secret.argocd.arn[count.index]]
+    resources = [aws_secretsmanager_secret.argocd.arn[0]]
   }
 }
 
@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "grafana" {
     }
 
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [aws_secretsmanager_secret.grafana.arn[count.index]]
+    resources = [aws_secretsmanager_secret.grafana.arn[0]]
   }
   statement {
     sid    = "AdminRole"
@@ -76,7 +76,7 @@ data "aws_iam_policy_document" "grafana" {
     }
 
     actions   = ["secretsmanager:*"]
-    resources = [aws_secretsmanager_secret.grafana.arn[count.index]]
+    resources = [aws_secretsmanager_secret.grafana.arn[0]]
   }
 }
 # [ ARGO CD Secretsmanage & Password]
@@ -100,15 +100,15 @@ resource "aws_secretsmanager_secret" "argocd" {
 resource "aws_secretsmanager_secret_policy" "argocd" {
   count = var.enable_argocd ? 1 : 0
 
-  secret_arn = aws_secretsmanager_secret.argocd.arn[count.index]
-  policy     = data.aws_iam_policy_document.argocd.json[count.index]
+  secret_arn = aws_secretsmanager_secret.argocd.arn[0]
+  policy     = data.aws_iam_policy_document.argocd.json[0]
 }
 
 resource "aws_secretsmanager_secret_version" "argocd" {
   count = var.enable_argocd ? 1 : 0
 
-  secret_id     = aws_secretsmanager_secret.argocd.id[count.index]
-  secret_string = random_password.argocd.result[count.index]
+  secret_id     = aws_secretsmanager_secret.argocd.id[0]
+  secret_string = random_password.argocd.result[0]
 }
 
 # # [ Grafana Secretsmanage & Password]
@@ -133,15 +133,15 @@ resource "aws_secretsmanager_secret" "grafana" {
 resource "aws_secretsmanager_secret_policy" "grafana" {
   count = var.enable_kube_prometheus_stack ? 1 : 0
 
-  secret_arn = aws_secretsmanager_secret.grafana.arn[count.index]
-  policy     = data.aws_iam_policy_document.grafana.json[count.index]
+  secret_arn = aws_secretsmanager_secret.grafana.arn[0]
+  policy     = data.aws_iam_policy_document.grafana.json[0]
 }
 
 resource "aws_secretsmanager_secret_version" "grafana" {
   count = var.enable_kube_prometheus_stack ? 1 : 0
 
-  secret_id     = aws_secretsmanager_secret.grafana.id[count.index]
-  secret_string = random_password.grafana.result[count.index]
+  secret_id     = aws_secretsmanager_secret.grafana.id[0]
+  secret_string = random_password.grafana.result[0]
 }
 
 
