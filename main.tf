@@ -21,7 +21,7 @@ module "eks" {
 
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
-  # control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
+  control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = var.enable_node_group == true ? true : false
   create_node_security_group    = var.enable_node_group == true ? true : false
