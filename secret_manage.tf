@@ -1,5 +1,4 @@
 data "aws_iam_policy_document" "argocd" {
-  count = var.enable_argocd ? 1 : 0
 
   statement {
     sid    = "AcceptRoleToReadTheSecret"
@@ -40,7 +39,6 @@ data "aws_iam_policy_document" "argocd" {
 }
 
 data "aws_iam_policy_document" "grafana" {
-  count = var.enable_kube_prometheus_stack ? 1 : 0
 
   statement {
     sid    = "AcceptRoleToReadTheSecret"
@@ -101,7 +99,7 @@ resource "aws_secretsmanager_secret_policy" "argocd" {
   count = var.enable_argocd ? 1 : 0
 
   secret_arn = aws_secretsmanager_secret.argocd.arn[0]
-  policy     = data.aws_iam_policy_document.argocd.json[0]
+  policy     = data.aws_iam_policy_document.argocd.json
 }
 
 resource "aws_secretsmanager_secret_version" "argocd" {
@@ -134,7 +132,7 @@ resource "aws_secretsmanager_secret_policy" "grafana" {
   count = var.enable_kube_prometheus_stack ? 1 : 0
 
   secret_arn = aws_secretsmanager_secret.grafana.arn[0]
-  policy     = data.aws_iam_policy_document.grafana.json[0]
+  policy     = data.aws_iam_policy_document.grafana.json
 }
 
 resource "aws_secretsmanager_secret_version" "grafana" {
