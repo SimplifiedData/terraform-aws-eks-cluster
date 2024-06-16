@@ -53,7 +53,7 @@ module "eks_blueprints_addons" {
     chart_version = try(var.kube_prometheus_stack_version, local.kube_prometheus_stack["version"])
     values = setunion(var.config_prometheus_stack, [templatefile("${path.module}/k8s/helm/kube_prometheus_stack/values.yaml", {
       ingress_enabled    = var.enable_grafana_ingress
-      grafana_password   = try(random_password.default["grafana"].result, "")
+      grafana_password   = try(random_password.grafana[*].result, "")
       ingress_certs_arn  = var.certificate
       ingress_name       = local.grafana_ingress
       ingress_ssl_policy = local.ingress_ssl_policy
@@ -186,7 +186,7 @@ module "eks_blueprints_addons_system" {
     chart_version = try(var.argocd_version, local.argocd["version"])
     set_sensitive = [{
       name  = "configs.secret.argocdServerAdminPassword"
-      value = try(bcrypt(random_password.default["argocd"].result), "")
+      value = try(bcrypt(random_password.argocd[*].result), "")
     }]
     set = [{
       name  = "redis-ha.haproxy.image.repository"
