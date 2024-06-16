@@ -18,7 +18,7 @@ kube-state-metrics:
 alertmanager:
   alertmanagerSpec:
     nodeSelector:
-      system: sdo
+      system: ${tags_system}
       manage-team: devops
       namespace: kube-system
     tolerations:
@@ -29,20 +29,20 @@ alertmanager:
 prometheus:
   prometheusSpec:
     additionalScrapeConfigs: |
-        - job_name: karpenter
-          kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-              - karpenter
-          relabel_configs:
-          - source_labels:
-            - __meta_kubernetes_endpoints_name
-            - __meta_kubernetes_endpoint_port_name
-            action: keep
-            regex: karpenter;http-metrics
+      - job_name: karpenter
+        kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+            - karpenter
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_endpoints_name
+          - __meta_kubernetes_endpoint_port_name
+          action: keep
+          regex: karpenter;http-metrics
     nodeSelector:
-      system: sdo
+      system: ${tags_system}
       manage-team: devops
       namespace: kube-system
     tolerations:
@@ -52,7 +52,7 @@ prometheus:
 
 prometheusOperator:
   nodeSelector:
-    system: sdo
+    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -62,7 +62,7 @@ prometheusOperator:
   admissionWebhooks:
     patch:
       nodeSelector:
-        system: sdo
+        system: ${tags_system}
         manage-team: devops
         namespace: kube-system
       tolerations:
@@ -73,7 +73,7 @@ prometheusOperator:
 thanosRuler:
   thanosRulerSpec:
     nodeSelector:
-      system: sdo
+      system: ${tags_system}
       manage-team: devops
       namespace: kube-system
     tolerations:
@@ -85,9 +85,9 @@ thanosRuler:
 grafana:
   adminPassword: ${grafana_password}
   tolerations:
-    - key: "devopsMangement"
-      operator: "Exists"
-      effect: "NoSchedule"
+  - key: "devopsMangement"
+    operator: "Exists"
+    effect: "NoSchedule"
   dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1
@@ -100,7 +100,7 @@ grafana:
         editable: true
         options:
           path: /var/lib/grafana/dashboards/default
-  dashboards: 
+  dashboards:
     default:
       capacity-dashboard:
         url: https://karpenter.sh/v0.36/getting-started/getting-started-with-karpenter/karpenter-capacity-dashboard.json
