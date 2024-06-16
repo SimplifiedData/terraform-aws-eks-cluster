@@ -15,13 +15,13 @@ module "eks" {
   cluster_version                = try(local.cluster_version, var.cluster_version)
 
   # Terraform identity admin access to cluster wich will allow deploying resources (Karpenter) into the cluster.
-  # enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = true
   cluster_endpoint_public_access           = true
-  # authentication_mode = "API_AND_CONFIG_MAP"
+  authentication_mode = "API_AND_CONFIG_MAP"
 
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
-  # control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
+  control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = var.enable_node_group == true ? true : false
   create_node_security_group    = var.enable_node_group == true ? true : false
