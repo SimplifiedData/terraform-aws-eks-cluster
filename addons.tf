@@ -54,7 +54,7 @@ module "eks_blueprints_addons" {
     values = setunion(var.config_prometheus_stack, [templatefile("${path.module}/k8s/helm/kube_prometheus_stack/values.yaml", {
       ingress_enabled    = var.enable_grafana_ingress
       tags_system            = var.tags["System"]
-      grafana_password   = random_password.grafana[count.index].result
+      grafana_password   = "${random_password.grafana[count.index].result}"
       ingress_certs_arn  = var.certificate
       ingress_name       = local.grafana_ingress
       ingress_ssl_policy = local.ingress_ssl_policy
