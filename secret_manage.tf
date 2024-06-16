@@ -1,5 +1,5 @@
-data "aws_iam_policy_document" "scm_default" {
-  for_each = local.addon_enable_password ? var.addons_config_password : {}
+data "aws_iam_policy_document" "argocd" {
+  count = var.enable_argocd ? 1 : 0
 
   statement {
     sid    = "AcceptRoleToReadTheSecret"
@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "scm_default" {
     }
 
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [aws_secretsmanager_secret.default[each.key].arn]
+    resources = [aws_secretsmanager_secret.argocd[*].arn]
   }
   statement {
     sid    = "AdminRole"
@@ -35,7 +35,48 @@ data "aws_iam_policy_document" "scm_default" {
     }
 
     actions   = ["secretsmanager:*"]
-    resources = [aws_secretsmanager_secret.default[each.key].arn]
+    resources = [aws_secretsmanager_secret.argocd[*].arn]
+  }
+}
+
+data "aws_iam_policy_document" "grafana" {
+  count = var.enable_kube_prometheus_stack ? 1 : 0
+
+  statement {
+    sid    = "AcceptRoleToReadTheSecret"
+    effect = "Deny"
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringNotLike"
+      variable = "aws:PrincipalArn"
+      values = setunion(var.condition_values, [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
+        # "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevRole",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole",
+      ])
+    }
+
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [aws_secretsmanager_secret.grafana[*].arn]
+  }
+  statement {
+    sid    = "AdminRole"
+    effect = "Allow"
+
+    principals {
+      type = "AWS"
+      identifiers = setunion(var.condition_values, [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole",
+      ])
+    }
+
+    actions   = ["secretsmanager:*"]
+    resources = [aws_secretsmanager_secret.grafana[*].arn]
   }
 }
 # [ ARGO CD Secretsmanage & Password]
@@ -60,13 +101,13 @@ resource "aws_secretsmanager_secret_policy" "argocd" {
   count = var.enable_argocd ? 1 : 0
 
   secret_arn = aws_secretsmanager_secret.argocd[*].arn
-  policy     = data.aws_iam_policy_document.scm_default[each.key].json
+  policy     = data.aws_iam_policy_document.argocd[*].json
 }
 
 resource "aws_secretsmanager_secret_version" "argocd" {
   count = var.enable_argocd ? 1 : 0
 
-  secret_id     = aws_secretsmanager_secret.default[*].id
+  secret_id     = aws_secretsmanager_secret.argocd[*].id
   secret_string = random_password.argocd[*].result
 }
 
@@ -93,7 +134,7 @@ resource "aws_secretsmanager_secret_policy" "grafana" {
   count = var.enable_kube_prometheus_stack ? 1 : 0
 
   secret_arn = aws_secretsmanager_secret.grafana[*].arn
-  policy     = data.aws_iam_policy_document.scm_default[each.key].json
+  policy     = data.aws_iam_policy_document.grafana[*].json
 }
 
 resource "aws_secretsmanager_secret_version" "grafana" {
