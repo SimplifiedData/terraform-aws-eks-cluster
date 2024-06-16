@@ -37,7 +37,7 @@ locals {
   ## ADDON Version
   #============================================
   karpenter = {
-    version = "0.36.1"
+    version = "0.36.2"
   }
   argocd = {
     # Updated to use ArgoCD version greater than 2.11.0

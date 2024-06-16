@@ -3,7 +3,38 @@ locals {
   cpu      = var.environment == "production" ? "'4','8','16','32'" : "'4','8','16'"
   size     = var.environment == "production" ? "medium,large,xlarge,2xlarge,4xlarge" : "medium,large,xlarge"
 }
+data "http" "nodepools" {
+  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_nodepools.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.sh_nodepools.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "nodepools" {
+  yaml_body = data.http.nodepools.body
+}
 
+data "http" "nodeclaims" {
+  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "nodeclaims" {
+  yaml_body = data.http.nodeclaims.body
+}
+
+data "http" "ec2nodeclasses" {
+  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "ec2nodeclasses" {
+  yaml_body = data.http.ec2nodeclasses.body
+}
 ##==================================================================
 ## KARPENTER Provision Node use VERSION 0.35.x
 ##==================================================================
