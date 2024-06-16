@@ -111,7 +111,6 @@ module "eks_blueprints_addons" {
     })])
   }
   ##==========================================================================================##
-
 }
 
 module "eks_blueprints_addons_system" {
@@ -221,7 +220,6 @@ module "eks_blueprints_addons_system" {
     values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
   }
   ##==========================================================================================##
-
   depends_on = [kubectl_manifest.default_provisioner, kubectl_manifest.default_nodetemplate]
 }
 
