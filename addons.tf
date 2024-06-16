@@ -18,16 +18,16 @@ module "eks_blueprints_addons" {
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/k8s/helm/karpenters/values.yaml", {
-      replicas        = var.environment == "production" ? 3 : 2
-      requests_cpu    = var.environment == "production" ? "1000m" : "500m"
-      requests_memory = var.environment == "production" ? "2Gi" : "1Gi"
+      replicas        = var.environment == "production" || var.environment == "prod" ? 3 : 2
+      requests_cpu    = var.environment == "production" || var.environment == "prod"  ? "1000m" : "500m"
+      requests_memory = var.environment == "production" || var.environment == "prod"  ? "2Gi" : "1Gi"
     })]
   }
-  karpenter_node = {
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
-  }
+  # karpenter_node = {
+  #   iam_role_additional_policies = {
+  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #   }
+  # }
   ##==========================================================================================##
 
   # IF Don't use deploy addons by argocd
