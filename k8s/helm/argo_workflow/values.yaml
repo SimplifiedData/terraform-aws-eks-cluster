@@ -3,7 +3,7 @@ controller:
     format: json
     level: error
   nodeSelector:
-    system: sdo
+    system: gof
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -16,7 +16,7 @@ server:
     format: json
     level: error
   nodeSelector:
-    system: sdo
+    system: gof
     manage-team: devops
     namespace: kube-system
   tolerations:
