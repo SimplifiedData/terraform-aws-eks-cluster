@@ -35,11 +35,11 @@ module "eks" {
   cloudwatch_log_group_retention_in_days = 14
 
   fargate_profiles = merge(var.fargate, {
-    karpenter = {
-      selectors = [
-        { namespace = "karpenter" }
-      ]
-    }
+    # karpenter = {
+    #   selectors = [
+    #     { namespace = "karpenter" }
+    #   ]
+    # }
   })
 
   tags = merge(var.tags, {
