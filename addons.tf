@@ -23,11 +23,11 @@ module "eks_blueprints_addons" {
       requests_memory = var.environment == "production" || var.environment == "prod"  ? "2Gi" : "1Gi"
     })]
   }
-  # karpenter_node = {
-  #   iam_role_additional_policies = {
-  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  #   }
-  # }
+  karpenter_node = {
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
   ##==========================================================================================##
 
   # IF Don't use deploy addons by argocd
