@@ -29,54 +29,54 @@ module "eks" {
   eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : {}
   cluster_addons = {
     coredns = {
-      configuration_values = jsonencode({
-        # computeType = "Fargate"
-        nodeSelector = {
-          "kubernetes.io/arch" = "arm64"
-          system               = var.tags["System"]
-          manage-team          = "devops"
-          namespace            = "kube-system"
-        }
-        tolerations = [
-          {
-            key      = "devopsMangement"
-            operator = "Exists"
-            effect   = "NoSchedule"
-          },
-        ]
-        resources = {
-          limits = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-          requests = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-        }
-      })
+      # configuration_values = jsonencode({
+      #   # computeType = "Fargate"
+      #   nodeSelector = {
+      #     "kubernetes.io/arch" = "arm64"
+      #     system               = var.tags["System"]
+      #     manage-team          = "devops"
+      #     namespace            = "kube-system"
+      #   }
+      #   tolerations = [
+      #     {
+      #       key      = "devopsMangement"
+      #       operator = "Exists"
+      #       effect   = "NoSchedule"
+      #     },
+      #   ]
+      #   resources = {
+      #     limits = {
+      #       cpu = "0.25"
+      #       # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+      #       memory = "256M"
+      #     }
+      #     requests = {
+      #       cpu = "0.25"
+      #       # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+      #       memory = "256M"
+      #     }
+      #   }
+      # })
     }
     aws-ebs-csi-driver = {
-      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-      configuration_values = jsonencode({
-        controller = {
-          nodeSelector = {
-            "kubernetes.io/arch" = "arm64"
-            system               = var.tags["System"]
-            manage-team          = "devops"
-            namespace            = "kube-system"
-          }
-          tolerations = [
-            {
-              key      = "devopsMangement"
-              operator = "Exists"
-              effect   = "NoSchedule"
-            },
-          ]
-        }
-      })
+      # service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+      # configuration_values = jsonencode({
+      #   controller = {
+      #     nodeSelector = {
+      #       "kubernetes.io/arch" = "arm64"
+      #       system               = var.tags["System"]
+      #       manage-team          = "devops"
+      #       namespace            = "kube-system"
+      #     }
+      #     tolerations = [
+      #       {
+      #         key      = "devopsMangement"
+      #         operator = "Exists"
+      #         effect   = "NoSchedule"
+      #       },
+      #     ]
+      #   }
+      # })
     }
     vpc-cni    = { most_recent = true }
     kube-proxy = { most_recent = true }
