@@ -102,3 +102,66 @@ YAML
   ]
 }
 
+# Kube Apply CRDs
+data "http" "provisioners" {
+  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_provisioners.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "provisioners" {
+  yaml_body = data.http.provisioners.body
+}
+
+data "http" "machines" {
+  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_machines.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "machines" {
+  yaml_body = data.http.machines.body
+}
+
+data "http" "awsnodetemplates" {
+  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.k8s.aws_awsnodetemplates.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "awsnodetemplates" {
+  yaml_body = data.http.awsnodetemplates.body
+}
+
+data "http" "nodepools" {
+  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_nodepools.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.sh_nodepools.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "nodepools" {
+  yaml_body = data.http.nodepools.body
+}
+
+data "http" "nodeclaims" {
+  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "nodeclaims" {
+  yaml_body = data.http.nodeclaims.body
+}
+
+data "http" "ec2nodeclasses" {
+  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
+  request_headers = {
+    Accept = "text/plain"
+  }
+}
+resource "kubectl_manifest" "ec2nodeclasses" {
+  yaml_body = data.http.ec2nodeclasses.body
+}
