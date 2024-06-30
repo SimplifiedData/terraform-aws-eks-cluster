@@ -4,39 +4,6 @@ locals {
   size     = var.environment == "production" ? "medium,large,xlarge,2xlarge,4xlarge" : "medium,large,xlarge"
 }
 
-# Kube Apply CRDs
-data "http" "nodepools" {
-  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_nodepools.yaml"
-  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.sh_nodepools.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "nodepools" {
-  yaml_body = data.http.nodepools.body
-}
-
-data "http" "nodeclaims" {
-  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
-  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.sh_nodeclaims.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "nodeclaims" {
-  yaml_body = data.http.nodeclaims.body
-}
-
-data "http" "ec2nodeclasses" {
-  # url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
-  url = "https://raw.githubusercontent.com/aws/karpenter/v${local.karpenter["version"]}/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml"
-  request_headers = {
-    Accept = "text/plain"
-  }
-}
-resource "kubectl_manifest" "ec2nodeclasses" {
-  yaml_body = data.http.ec2nodeclasses.body
-}
 ##==================================================================
 ## KARPENTER Provision Node use VERSION 0.35.x
 ##==================================================================
@@ -46,7 +13,7 @@ resource "kubectl_manifest" "default_provisioner" {
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
 metadata:
-  name: default
+  name: default-${var.tags["Environment"]}
 spec:
   template:
     metadata:
@@ -60,7 +27,7 @@ spec:
         namespace: kube-system
     spec:
       nodeClassRef:
-        name: default
+        name: default-${var.tags["Environment"]}
       taints:
         - key: "devopsMangement"
           value: "true"
@@ -105,13 +72,13 @@ resource "kubectl_manifest" "default_nodetemplate" {
 apiVersion: karpenter.k8s.aws/v1beta1
 kind: EC2NodeClass
 metadata:
-  name: default
+  name: default-${var.tags["Environment"]}
 spec:
   amiFamily: AL2
   associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
-        Name: "*${var.aws_account_name}-nonexpose*"
+        Name: "*isearch-${var.aws_account_name}-nonexpose*"
     # - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
   securityGroupSelectorTerms:
     - tags:

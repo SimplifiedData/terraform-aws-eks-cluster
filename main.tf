@@ -9,15 +9,69 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.14.0"
+  version = "20.13.1"
 
-  cluster_name    = var.cluster_name
-  cluster_version = try(local.cluster_version, var.cluster_version)
+  cluster_name                   = var.cluster_name
+  cluster_version                = try(local.cluster_version, var.cluster_version)
 
   # Terraform identity admin access to cluster wich will allow deploying resources (Karpenter) into the cluster.
   # enable_cluster_creator_admin_permissions = true
   cluster_endpoint_public_access           = true
-  authentication_mode                      = "API_AND_CONFIG_MAP"
+  authentication_mode = "API_AND_CONFIG_MAP"
+  cluster_addons = {
+    coredns = {
+      configuration_values = jsonencode({
+        # computeType = "Fargate"
+        nodeSelector = {
+          "kubernetes.io/arch" = "arm64"
+          system               = var.tags["System"]
+          manage-team          = "devops"
+          namespace            = "kube-system"
+        }
+        tolerations = [
+          {
+            key      = "devopsMangement"
+            operator = "Exists"
+            effect   = "NoSchedule"
+          },
+        ]
+        resources = {
+          limits = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+          requests = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+        }
+      })
+    }
+    aws-ebs-csi-driver = {
+      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+      configuration_values = jsonencode({
+        controller = {
+          nodeSelector = {
+            "kubernetes.io/arch" = "arm64"
+            system               = var.tags["System"]
+            manage-team          = "devops"
+            namespace            = "kube-system"
+          }
+          tolerations = [
+            {
+              key      = "devopsMangement"
+              operator = "Exists"
+              effect   = "NoSchedule"
+            },
+          ]
+        }
+      })
+    }
+    vpc-cni    = { }
+    kube-proxy = { }
+  }
 
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
@@ -27,60 +81,7 @@ module "eks" {
   create_node_security_group    = var.enable_node_group == true ? true : false
 
   eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : {}
-  cluster_addons = {
-    coredns = {
-      # configuration_values = jsonencode({
-      #   # computeType = "Fargate"
-      #   nodeSelector = {
-      #     "kubernetes.io/arch" = "arm64"
-      #     system               = var.tags["System"]
-      #     manage-team          = "devops"
-      #     namespace            = "kube-system"
-      #   }
-      #   tolerations = [
-      #     {
-      #       key      = "devopsMangement"
-      #       operator = "Exists"
-      #       effect   = "NoSchedule"
-      #     },
-      #   ]
-      #   resources = {
-      #     limits = {
-      #       cpu = "0.25"
-      #       # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-      #       memory = "256M"
-      #     }
-      #     requests = {
-      #       cpu = "0.25"
-      #       # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-      #       memory = "256M"
-      #     }
-      #   }
-      # })
-    }
-    aws-ebs-csi-driver = {
-      # service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-      # configuration_values = jsonencode({
-      #   controller = {
-      #     nodeSelector = {
-      #       "kubernetes.io/arch" = "arm64"
-      #       system               = var.tags["System"]
-      #       manage-team          = "devops"
-      #       namespace            = "kube-system"
-      #     }
-      #     tolerations = [
-      #       {
-      #         key      = "devopsMangement"
-      #         operator = "Exists"
-      #         effect   = "NoSchedule"
-      #       },
-      #     ]
-      #   }
-      # })
-    }
-    vpc-cni    = { most_recent = true }
-    kube-proxy = { most_recent = true }
-  }
+
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
