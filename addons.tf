@@ -1,6 +1,6 @@
 module "eks_blueprints_addons" {
   source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "1.16.0"
+  version = "1.16.3"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -22,10 +22,14 @@ module "eks_blueprints_addons" {
       requests_cpu    = var.environment == "production" || var.environment == "prod"  ? "1000m" : "500m"
       requests_memory = var.environment == "production" || var.environment == "prod"  ? "2Gi" : "1Gi"
     })]
+    # role_policies = {
+    #   AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    # }
   }
   karpenter_node = {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      # AmazonEKSForFargateServiceRolePolicy = "arn:aws:iam::aws:policy/aws-service-role/AmazonEKSForFargateServiceRolePolicy"
     }
   }
   ##==========================================================================================##
@@ -122,62 +126,62 @@ module "eks_blueprints_addons_system" {
   cluster_version   = module.eks.cluster_version
   oidc_provider_arn = module.eks.oidc_provider_arn
   # We want to wait for the Fargate profiles to be deployed first
-  # create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
+  create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
   # [ Addons For System] =====================================================================##
-  # eks_addons = var.enable_eksaddons ? {
-  #   coredns = {
-  #     configuration_values = jsonencode({
-  #       # computeType = "Fargate"
-  #       nodeSelector = {
-  #         "kubernetes.io/arch" = "arm64"
-  #         system               = var.tags["System"]
-  #         manage-team          = "devops"
-  #         namespace            = "kube-system"
-  #       }
-  #       tolerations = [
-  #         {
-  #           key      = "devopsMangement"
-  #           operator = "Exists"
-  #           effect   = "NoSchedule"
-  #         },
-  #       ]
-  #       resources = {
-  #         limits = {
-  #           cpu = "0.25"
-  #           # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-  #           memory = "256M"
-  #         }
-  #         requests = {
-  #           cpu = "0.25"
-  #           # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-  #           memory = "256M"
-  #         }
-  #       }
-  #     })
-  #   }
-  #   aws-ebs-csi-driver = {
-  #     service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-  #     configuration_values = jsonencode({
-  #       controller = {
-  #         nodeSelector = {
-  #           "kubernetes.io/arch" = "arm64"
-  #           system               = var.tags["System"]
-  #           manage-team          = "devops"
-  #           namespace            = "kube-system"
-  #         }
-  #         tolerations = [
-  #           {
-  #             key      = "devopsMangement"
-  #             operator = "Exists"
-  #             effect   = "NoSchedule"
-  #           },
-  #         ]
-  #       }
-  #     })
-  #   }
-  #   vpc-cni    = { most_recent = true }
-  #   kube-proxy = {}
-  # } : {}
+  eks_addons = var.enable_eksaddons ? {
+    coredns = {
+      configuration_values = jsonencode({
+        # computeType = "Fargate"
+        nodeSelector = {
+          "kubernetes.io/arch" = "arm64"
+          system               = var.tags["System"]
+          manage-team          = "devops"
+          namespace            = "kube-system"
+        }
+        tolerations = [
+          {
+            key      = "devopsMangement"
+            operator = "Exists"
+            effect   = "NoSchedule"
+          },
+        ]
+        resources = {
+          limits = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+          requests = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+        }
+      })
+    }
+    aws-ebs-csi-driver = {
+      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+      configuration_values = jsonencode({
+        controller = {
+          nodeSelector = {
+            "kubernetes.io/arch" = "arm64"
+            system               = var.tags["System"]
+            manage-team          = "devops"
+            namespace            = "kube-system"
+          }
+          tolerations = [
+            {
+              key      = "devopsMangement"
+              operator = "Exists"
+              effect   = "NoSchedule"
+            },
+          ]
+        }
+      })
+    }
+    vpc-cni    = { most_recent = true }
+    kube-proxy = {}
+  } : {}
   ##==========================================================================================##
   # [--- ARGO CD ---] ========================================================================##
   enable_argocd = var.enable_argocd

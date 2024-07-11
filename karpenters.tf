@@ -78,7 +78,7 @@ spec:
   associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
-        Name: "*isearch-${var.aws_account_name}-nonexpose*"
+        Name: "*${var.aws_account_name}-nonexpose*"
     # - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
   securityGroupSelectorTerms:
     - tags:

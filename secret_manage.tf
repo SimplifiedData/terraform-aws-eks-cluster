@@ -11,10 +11,10 @@ resource "random_password" "default" {
 resource "aws_secretsmanager_secret" "default" {
   for_each = local.addon_enable_password ? var.addons_config_password : {}
 
-  name                    = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm" : "${var.environment}-scm-${var.name_service}-${random_string.default.result}"}")
+  name                    = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm-${var.tags["System"]}-${random_string.default.result}" : "${var.environment}-scm-${var.name_service}-${random_string.default.result}"}")
   recovery_window_in_days = 0
   tags = merge(var.tags, {
-    Name = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm" : "${var.environment}-scm"}")
+    Name = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm-${var.tags["System"]}-${random_string.default.result}" : "${var.environment}-scm"}")
   })
 }
 
