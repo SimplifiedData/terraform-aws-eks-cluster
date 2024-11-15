@@ -209,3 +209,7 @@ output "crossplane_role" {
 output "albcontroller_role" {
   value = aws_iam_role.albrole[*].arn
 }
+
+output "albcontroller_role_policy" {
+  value = aws_iam_role_policy.albrole_policy[*].arn
+}

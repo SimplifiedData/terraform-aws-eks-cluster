@@ -208,9 +208,9 @@ variable "argo_rollouts_version" {
 }
 
 variable "enable_node_group" {
-default = false
+  default = false
 }
 variable "manage_node_group" {
-  type        = any
+  type    = any
   default = {}
 }
