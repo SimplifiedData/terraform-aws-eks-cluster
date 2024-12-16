@@ -8,7 +8,7 @@ variable "name_service" {
 variable "addons_config_password" {
   type = any
   default = {
-    grafana = {}
+    # grafana = {}
     argocd  = {}
     # argowf = {}
   }
@@ -182,7 +182,7 @@ variable "aws_load_balancer_controller" {
 }
 
 variable "enable_alb_controller" {
-  default = false
+  default = true
 }
 
 variable "argocd_version" {
