@@ -12,7 +12,7 @@ module "eks" {
   version = "20.13.1"
 
   cluster_name                   = var.cluster_name
-  cluster_version                = 1.29
+  cluster_version                = try(var.cluster_version, 1.29)
 
   # Terraform identity admin access to cluster wich will allow deploying resources (Karpenter) into the cluster.
   enable_cluster_creator_admin_permissions = true
