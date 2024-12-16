@@ -208,14 +208,9 @@ variable "argo_rollouts_version" {
 }
 
 variable "enable_node_group" {
-  default = false
+default = false
 }
 variable "manage_node_group" {
-  type    = any
+  type        = any
   default = {}
-}
-variable "aws_auth_fargate_profile_pod_execution_role_arns" {
-  description = "List of Fargate profile pod execution role ARNs to add to the aws-auth configmap"
-  type        = list(string)
-  default     = []
 }

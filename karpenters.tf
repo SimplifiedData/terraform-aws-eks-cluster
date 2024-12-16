@@ -13,7 +13,7 @@ resource "kubectl_manifest" "default_provisioner" {
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
 metadata:
-  name: default-${var.tags["Environment"]}
+  name: default
 spec:
   template:
     metadata:
@@ -27,7 +27,7 @@ spec:
         namespace: kube-system
     spec:
       nodeClassRef:
-        name: default-${var.tags["Environment"]}
+        name: default
       taints:
         - key: "devopsMangement"
           value: "true"
@@ -72,13 +72,13 @@ resource "kubectl_manifest" "default_nodetemplate" {
 apiVersion: karpenter.k8s.aws/v1beta1
 kind: EC2NodeClass
 metadata:
-  name: default-${var.tags["Environment"]}
+  name: default
 spec:
   amiFamily: AL2
   associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
-        Name: "*${var.aws_account_name}-nonexpose*"
+        Name: "*isearch-${var.aws_account_name}-nonexpose*"
     # - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
   securityGroupSelectorTerms:
     - tags:
