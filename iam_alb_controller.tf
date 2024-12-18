@@ -47,6 +47,7 @@ resource "aws_iam_role" "albrole" {
             "elasticloadbalancing:DescribeRules",
             "elasticloadbalancing:DescribeLoadBalancers",
             "elasticloadbalancing:DescribeLoadBalancerAttributes",
+            "elasticloadbalancing:DescribeListenerAttributes",
             "elasticloadbalancing:DescribeListeners",
             "elasticloadbalancing:DescribeListenerCertificates",
             "ec2:GetCoipPoolUsage",
