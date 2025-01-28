@@ -10,10 +10,10 @@ locals {
 resource "kubectl_manifest" "default_provisioner" {
   count     = var.enable_manifest_karpenter ? 1 : 0
   yaml_body = <<YAML
-apiVersion: karpenter.sh/v1beta1
+apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
-  name: default-${var.tags["Environment"]}
+  name: default
 spec:
   template:
     metadata:
@@ -26,8 +26,11 @@ spec:
         manage-team: devops
         namespace: kube-system
     spec:
+      expireAfter: 720h
       nodeClassRef:
-        name: default-${var.tags["Environment"]}
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default
       taints:
         - key: "devopsMangement"
           value: "true"
@@ -51,10 +54,12 @@ spec:
         - key: "karpenter.sh/capacity-type" # If not included, the webhook for the AWS cloud provider will default to on-demand
           operator: In
           values: ["on-demand"]
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["2"]
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 300s
-    expireAfter: 720h
   limits:
     cpu: "1000"
     memory: 1000Gi
@@ -69,16 +74,18 @@ YAML
 resource "kubectl_manifest" "default_nodetemplate" {
   count     = var.enable_manifest_karpenter ? 1 : 0
   yaml_body = <<YAML
-apiVersion: karpenter.k8s.aws/v1beta1
+apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
 metadata:
-  name: default-${var.tags["Environment"]}
+  name: default
 spec:
-  amiFamily: AL2
+  amiFamily: AL2023
+  amiSelectorTerms:
+  - alias: al2023@latest
   associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
-        Name: "*${var.aws_account_name}-nonexpose*"
+        Name: '*-nonexpose-*'
     # - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
   securityGroupSelectorTerms:
     - tags:

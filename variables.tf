@@ -47,6 +47,10 @@ variable "karpenter" {
     repository = "oci://public.ecr.aws/karpenter"
   }
 }
+variable "karpenter_version" {
+  type    = number
+  default = "1.1.0"
+}
 variable "metrics" {
   type = map(any)
   default = {
