@@ -30,7 +30,7 @@ locals {
     }
   ])
 
-  cluster_version    = 1.29
+  cluster_version    = 1.32
   ingress_ssl_policy = "ELBSecurityPolicy-TLS13-1-3-2021-06"
 
   #============================================
