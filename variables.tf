@@ -48,7 +48,7 @@ variable "karpenter" {
   }
 }
 variable "karpenter_version" {
-  type    = string
+  type    = number
   default = null
 }
 
