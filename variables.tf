@@ -48,8 +48,7 @@ variable "karpenter" {
   }
 }
 variable "karpenter_version" {
-  type    = number
-  default = "1.1.0"
+  default = null
 }
 variable "metrics" {
   type = map(any)
