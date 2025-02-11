@@ -49,7 +49,7 @@ variable "karpenter" {
 }
 variable "karpenter_version" {
   type    = number
-  default = null
+  default = "1.2.1"
 }
 
 variable "metrics" {
