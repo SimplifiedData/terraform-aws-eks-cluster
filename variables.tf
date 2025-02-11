@@ -48,6 +48,7 @@ variable "karpenter" {
   }
 }
 variable "karpenter_version" {
+  type    = string
   default = null
 }
 variable "metrics" {
