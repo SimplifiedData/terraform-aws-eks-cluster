@@ -76,7 +76,8 @@ module "eks_aws_auth" {
         ]
       }
     ],
-    # [
+    ## ?role
+    # [ 
     #   for role_arn in local.fargate_profile_pod_execution_role_arns : {
     #     rolearn  = role_arn
     #     username = "system:node:{{SessionName}}"
