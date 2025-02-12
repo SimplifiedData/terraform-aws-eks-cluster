@@ -2,11 +2,7 @@
 # ALB Controller Role                  #
 #======================================#
 resource "aws_iam_role" "albrole" {
-<<<<<<< HEAD
-  count = var.enable_alb_controller ? 1 : 0
-=======
   count = var.enable_alb_controller || var.enable_load_balancer_controller == false ? 1 : 0
->>>>>>> v1.1.1-dev
   name  = "alb-controller-${random_string.default.result}" ## [Role]: name
   assume_role_policy = jsonencode({                        ## [Trust relationships]
     "Version" : "2012-10-17",

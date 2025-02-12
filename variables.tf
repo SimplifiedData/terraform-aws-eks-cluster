@@ -218,11 +218,8 @@ variable "manage_node_group" {
   type    = any
   default = {}
 }
-<<<<<<< HEAD
-=======
 variable "aws_auth_fargate_profile_pod_execution_role_arns" {
   description = "List of Fargate profile pod execution role ARNs to add to the aws-auth configmap"
   type        = list(string)
   default     = []
 }
->>>>>>> v1.1.1-dev

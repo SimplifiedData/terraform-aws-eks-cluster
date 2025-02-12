@@ -11,11 +11,7 @@ resource "random_password" "default" {
 resource "aws_secretsmanager_secret" "default" {
   for_each = local.addon_enable_password ? var.addons_config_password : {}
 
-<<<<<<< HEAD
-  name                    = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm-${random_string.default.result}" : "${var.environment}-scm-${var.name_service}-${random_string.default.result}"}")
-=======
   name                    = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm-${var.tags["System"]}-${random_string.default.result}" : "${var.environment}-scm-${var.name_service}-${random_string.default.result}"}")
->>>>>>> v1.1.1-dev
   recovery_window_in_days = 0
   tags = merge(var.tags, {
     Name = try(each.value.name, "${each.key}-${var.environment != "dev" ? "scm-${var.tags["System"]}-${random_string.default.result}" : "${var.environment}-scm"}")
@@ -51,11 +47,7 @@ data "aws_iam_policy_document" "scm_default" {
       test     = "StringNotLike"
       variable = "aws:PrincipalArn"
       values = setunion(var.condition_values, [
-<<<<<<< HEAD
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
-=======
         # "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/SDSDevOpsEc2BastionHostRole",
->>>>>>> v1.1.1-dev
         # "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevRole",
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole",
       ])

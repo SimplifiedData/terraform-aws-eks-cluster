@@ -9,20 +9,6 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-<<<<<<< HEAD
-  version = "20.13.1"
-
-  cluster_name    = var.cluster_name
-  cluster_version = try(local.cluster_version, var.cluster_version)
-
-  # Terraform identity admin access to cluster wich will allow deploying resources (Karpenter) into the cluster.
-  enable_cluster_creator_admin_permissions = true
-  cluster_endpoint_public_access           = true
-  authentication_mode                      = "API_AND_CONFIG_MAP"
-
-  vpc_id                   = var.vpc_id
-  subnet_ids               = data.aws_subnets.nonexpose.ids
-=======
   version = "20.17.2"
 
   cluster_name                   = var.cluster_name
@@ -32,91 +18,13 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
   cluster_endpoint_public_access           = true
   authentication_mode = "API_AND_CONFIG_MAP"
-  # cluster_addons = {
-  #   coredns = {
-  #     # configuration_values = jsonencode({
-  #     #   # computeType = "Fargate"
-  #     #   nodeSelector = {
-  #     #     "kubernetes.io/arch" = "arm64"
-  #     #     system               = var.tags["System"]
-  #     #     manage-team          = "devops"
-  #     #     namespace            = "kube-system"
-  #     #   }
-  #     #   tolerations = [
-  #     #     {
-  #     #       key      = "devopsMangement"
-  #     #       operator = "Exists"
-  #     #       effect   = "NoSchedule"
-  #     #     },
-  #     #   ]
-  #     #   resources = {
-  #     #     limits = {
-  #     #       cpu = "0.25"
-  #     #       # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-  #     #       memory = "256M"
-  #     #     }
-  #     #     requests = {
-  #     #       cpu = "0.25"
-  #     #       # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-  #     #       memory = "256M"
-  #     #     }
-  #     #   }
-  #     # })
-  #   }
-  #   aws-ebs-csi-driver = {
-  #     # service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-  #     # configuration_values = jsonencode({
-  #     #   controller = {
-  #     #     nodeSelector = {
-  #     #       "kubernetes.io/arch" = "arm64"
-  #     #       system               = var.tags["System"]
-  #     #       manage-team          = "devops"
-  #     #       namespace            = "kube-system"
-  #     #     }
-  #     #     tolerations = [
-  #     #       {
-  #     #         key      = "devopsMangement"
-  #     #         operator = "Exists"
-  #     #         effect   = "NoSchedule"
-  #     #       },
-  #     #     ]
-  #     #   }
-  #     # })
-  #   }
-  #   vpc-cni    = { }
-  #   kube-proxy = { }
-  # }
 
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.nonexpose.ids
->>>>>>> v1.1.1-dev
   control_plane_subnet_ids = data.aws_subnets.nonexpose.ids
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = var.enable_node_group == true ? true : false
   create_node_security_group    = var.enable_node_group == true ? true : false
-<<<<<<< HEAD
-
-  eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : {}
-
-  iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
-  cluster_enabled_log_types              = ["audit", "api"]
-  cloudwatch_log_group_retention_in_days = 14
-
-  fargate_profiles = merge(var.fargate, {
-    karpenter = {
-      selectors = [
-        { namespace = "karpenter" }
-      ]
-    }
-  })
-
-  tags = merge(var.tags, {
-    Name                     = var.cluster_name
-    "karpenter.sh/discovery" = var.cluster_name
-  })
-=======
 
   eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : {}
 
@@ -180,7 +88,6 @@ module "eks_aws_auth" {
     #   }
     # ]
   )
->>>>>>> v1.1.1-dev
 }
 
 
