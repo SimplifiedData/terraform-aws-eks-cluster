@@ -89,27 +89,6 @@ module "eks_aws_auth" {
     # ]
   )
 }
-
-
-module "eks_aws_auth" {
-  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version = "20.11.1"
-
-  manage_aws_auth_configmap = true
-  aws_auth_roles = setunion(var.environment == "production" ? local.account_prd : local.account_dev,
-    [
-      {
-        rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
-    ]
-  )
-}
-
 #============================================
 # Tag VPC, Tested on awscli 2.9.8           #
 #============================================
