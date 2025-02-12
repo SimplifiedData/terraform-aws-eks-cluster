@@ -10,7 +10,11 @@ locals {
 resource "kubectl_manifest" "default_provisioner" {
   count     = var.enable_manifest_karpenter ? 1 : 0
   yaml_body = <<YAML
+<<<<<<< HEAD
 apiVersion: karpenter.sh/v1beta1
+=======
+apiVersion: karpenter.sh/v1
+>>>>>>> v1.1.1-dev
 kind: NodePool
 metadata:
   name: default
@@ -26,7 +30,14 @@ spec:
         manage-team: devops
         namespace: kube-system
     spec:
+<<<<<<< HEAD
       nodeClassRef:
+=======
+      expireAfter: 720h
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+>>>>>>> v1.1.1-dev
         name: default
       taints:
         - key: "devopsMangement"
@@ -51,10 +62,19 @@ spec:
         - key: "karpenter.sh/capacity-type" # If not included, the webhook for the AWS cloud provider will default to on-demand
           operator: In
           values: ["on-demand"]
+<<<<<<< HEAD
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 300s
     expireAfter: 720h
+=======
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["2"]
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 300s
+>>>>>>> v1.1.1-dev
   limits:
     cpu: "1000"
     memory: 1000Gi
@@ -69,16 +89,30 @@ YAML
 resource "kubectl_manifest" "default_nodetemplate" {
   count     = var.enable_manifest_karpenter ? 1 : 0
   yaml_body = <<YAML
+<<<<<<< HEAD
 apiVersion: karpenter.k8s.aws/v1beta1
+=======
+apiVersion: karpenter.k8s.aws/v1
+>>>>>>> v1.1.1-dev
 kind: EC2NodeClass
 metadata:
   name: default
 spec:
+<<<<<<< HEAD
   amiFamily: AL2
   associatePublicIPAddress: false
   subnetSelectorTerms:
     - tags:
         Name: "*${var.aws_account_name}-nonexpose*"
+=======
+  amiFamily: AL2023
+  amiSelectorTerms:
+  - alias: al2023@latest
+  associatePublicIPAddress: false
+  subnetSelectorTerms:
+    - tags:
+        Name: '*-nonexpose-*'
+>>>>>>> v1.1.1-dev
     # - id: "%{~for i, v in data.aws_subnets.nonexpose.ids~}${v}%{if i < length(data.aws_subnets.nonexpose.ids) - 1}, %{endif}%{~endfor~}"
   securityGroupSelectorTerms:
     - tags:
@@ -102,6 +136,7 @@ YAML
   ]
 }
 
+<<<<<<< HEAD
 # Kube Apply CRDs
 data "http" "provisioners" {
   url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.32.7/pkg/apis/crds/karpenter.sh_provisioners.yaml"
@@ -165,3 +200,5 @@ data "http" "ec2nodeclasses" {
 resource "kubectl_manifest" "ec2nodeclasses" {
   yaml_body = data.http.ec2nodeclasses.body
 }
+=======
+>>>>>>> v1.1.1-dev

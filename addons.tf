@@ -1,6 +1,10 @@
 module "eks_blueprints_addons" {
   source  = "aws-ia/eks-blueprints-addons/aws"
+<<<<<<< HEAD
   version = "1.16.0"
+=======
+  version = "1.16.3"
+>>>>>>> v1.1.1-dev
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -13,19 +17,30 @@ module "eks_blueprints_addons" {
   enable_karpenter                           = true
   karpenter_enable_instance_profile_creation = false
   karpenter = {
+<<<<<<< HEAD
     chart_version = local.karpenter["version"]
+=======
+    chart_version = try(var.karpenter_version, local.karpenter["version"])
+>>>>>>> v1.1.1-dev
     # repository          = "oci://public.ecr.aws/karpenter/karpenter-crd"
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
     values = [templatefile("${path.module}/k8s/helm/karpenters/values.yaml", {
+<<<<<<< HEAD
       replicas        = var.environment == "production" ? 3 : 2
       requests_cpu    = var.environment == "production" ? "1000m" : "500m"
       requests_memory = var.environment == "production" ? "2Gi" : "1Gi"
+=======
+      replicas        = var.environment == "production" || var.environment == "prod" ? 3 : 2
+      requests_cpu    = var.environment == "production" || var.environment == "prod"  ? "1000m" : "500m"
+      requests_memory = var.environment == "production" || var.environment == "prod"  ? "2Gi" : "1Gi"
+>>>>>>> v1.1.1-dev
     })]
   }
   karpenter_node = {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      # AmazonEKSForFargateServiceRolePolicy = "arn:aws:iam::aws:policy/aws-service-role/AmazonEKSForFargateServiceRolePolicy"
     }
   }
   ##==========================================================================================##
@@ -111,6 +126,7 @@ module "eks_blueprints_addons" {
     })])
   }
   ##==========================================================================================##
+
 }
 
 module "eks_blueprints_addons_system" {
@@ -122,7 +138,7 @@ module "eks_blueprints_addons_system" {
   cluster_version   = module.eks.cluster_version
   oidc_provider_arn = module.eks.oidc_provider_arn
   # We want to wait for the Fargate profiles to be deployed first
-  # create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
+  create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
   # [ Addons For System] =====================================================================##
   eks_addons = var.enable_eksaddons ? {
     coredns = {
@@ -220,6 +236,10 @@ module "eks_blueprints_addons_system" {
     values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
   }
   ##==========================================================================================##
+<<<<<<< HEAD
+=======
+
+>>>>>>> v1.1.1-dev
   depends_on = [kubectl_manifest.default_provisioner, kubectl_manifest.default_nodetemplate]
 }
 

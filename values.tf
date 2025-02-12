@@ -9,7 +9,11 @@ locals {
   argorollouts_ingress  = var.argorollouts_ingress_name == null ? "k8s-argo-ro-${var.name_service}-${local.env}${random_string.default.result}" : var.argorollouts_ingress_name
   dns_suffix            = data.aws_partition.current.dns_suffix
   partition             = data.aws_partition.current.partition
+<<<<<<< HEAD
   account_dev = setunion(var.enable_node_group ? [] : [], [
+=======
+  account_dev = setunion( var.enable_node_group ? [] : [], [
+>>>>>>> v1.1.1-dev
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole"
       username = "devops-role"
@@ -22,7 +26,11 @@ locals {
       groups   = ["system:masters"]
     }
   ])
+<<<<<<< HEAD
   account_prd = setunion(var.enable_node_group ? [] : [], [
+=======
+  account_prd = setunion( var.enable_node_group ? [] : [], [
+>>>>>>> v1.1.1-dev
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSGSDevOpsRole"
       username = "devops-role"
@@ -30,14 +38,22 @@ locals {
     }
   ])
 
+<<<<<<< HEAD
   cluster_version    = 1.29
+=======
+  cluster_version    = 1.32
+>>>>>>> v1.1.1-dev
   ingress_ssl_policy = "ELBSecurityPolicy-TLS13-1-3-2021-06"
 
   #============================================
   ## ADDON Version
   #============================================
   karpenter = {
+<<<<<<< HEAD
     version = "0.37.0"
+=======
+    version = "1.2.1"
+>>>>>>> v1.1.1-dev
   }
   argocd = {
     # Updated to use ArgoCD version greater than 2.11.0
