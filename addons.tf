@@ -124,7 +124,7 @@ module "eks_blueprints_addons_system" {
   cluster_version   = module.eks.cluster_version
   oidc_provider_arn = module.eks.oidc_provider_arn
   # We want to wait for the Fargate profiles to be deployed first
-  create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
+  # create_delay_dependencies = [for prof in module.eks.fargate_profiles : prof.fargate_profile_arn]
   # [ Addons For System] =====================================================================##
   eks_addons = var.enable_eksaddons ? {
     coredns = {
@@ -216,11 +216,11 @@ module "eks_blueprints_addons_system" {
     })])
   }
   # [--]
-  enable_cluster_proportional_autoscaler = var.enable_eksaddons
-  cluster_proportional_autoscaler = {
-    chart_version = local.cluster_proportional_autoscaler["version"]
-    values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
-  }
+  # enable_cluster_proportional_autoscaler = var.enable_eksaddons
+  # cluster_proportional_autoscaler = {
+  #   chart_version = local.cluster_proportional_autoscaler["version"]
+  #   values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
+  # }
   ##==========================================================================================##
   depends_on = [kubectl_manifest.default_provisioner, kubectl_manifest.default_nodetemplate]
 }

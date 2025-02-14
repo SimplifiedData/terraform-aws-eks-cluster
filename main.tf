@@ -75,7 +75,7 @@ module "eks_aws_auth" {
           "system:nodes",
         ]
       }
-    ],
+    ]
     ## ?role
     # [ 
     #   for role_arn in local.fargate_profile_pod_execution_role_arns : {
