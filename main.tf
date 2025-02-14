@@ -9,7 +9,7 @@ resource "random_string" "default" {
 #============================================
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.17.2"
+  version = "20.33.1"
 
   cluster_name                   = var.cluster_name
   cluster_version                = try(var.cluster_version, local.cluster_version)
