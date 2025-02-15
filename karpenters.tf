@@ -5,7 +5,7 @@ locals {
 }
 
 ##==================================================================
-## KARPENTER Provision Node use VERSION 0.35.x
+## KARPENTER Provision Node use VERSION 1.1.x
 ##==================================================================
 resource "kubectl_manifest" "default_provisioner" {
   count     = var.enable_manifest_karpenter ? 1 : 0
@@ -83,6 +83,12 @@ spec:
   amiSelectorTerms:
   - alias: al2023@latest
   associatePublicIPAddress: false
+  instanceProfile: "${module.eks_blueprints_addons.karpenter.node_instance_profile_name}"
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    # httpPutResponseHopLimit: 2
+    httpTokens: required
   subnetSelectorTerms:
     - tags:
         Name: '*-nonexpose-*'
@@ -90,19 +96,17 @@ spec:
   securityGroupSelectorTerms:
     - tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
-  instanceProfile: "${module.eks_blueprints_addons.karpenter.node_instance_profile_name}"
   tags:
-    Name: "kube_system_ng-by-karpenter_${module.eks.cluster_name}"
-    Environment: "${var.environment}"
-    Owner: "${var.tags["Owner"]}"
-    Service: "${var.tags["Service"]}"
-    System: "${var.tags["System"]}"
-    Createby: "karpenter"
-    map-migrated: "${var.tags["map-migrated"]}"
-    app.kubernetes.io/created-by: "karpenter"
-    karpenter.sh/discovery: "${module.eks.cluster_name}"
+    Name: kube_system_ng-by-karpenter_${module.eks.cluster_name}
+    Environment: ${var.environment}
+    Owner: ${var.tags["Owner"]}
+    Service: ${var.tags["Service"]}
+    System: ${var.tags["System"]}
+    Createby: karpenter
+    map-migrated: ${var.tags["map-migrated"]}
+    app.kubernetes.io/created-by: karpenter
+    karpenter.sh/discovery: ${module.eks.cluster_name}
 YAML
-
   depends_on = [
     module.eks.cluster,
     module.eks_blueprints_addons.karpenter,
