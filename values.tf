@@ -58,7 +58,7 @@ locals {
     version = "57.1.1"
   }
   argo_workflows = {
-    version = "0.41.0"
+    version = "0.45.3"
   }
   argo_event = {
     version = "2.4.4"
