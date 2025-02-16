@@ -154,7 +154,7 @@ variable "crossplane" {
 }
 variable "enable_load_balancer_controller" {
   type    = bool
-  default = true
+  default = false
 }
 variable "enable_metrics_server" {
   type    = bool
