@@ -74,6 +74,7 @@ module "eks_blueprints_addons" {
     chart_version = try(var.argo_workflows_version, local.argo_workflows["version"])
     values = setunion(var.config_argo_workflow, [templatefile("${path.module}/k8s/helm/argo_workflow/values.yaml", {
       ingress_enabled    = true
+      tags_system        = var.tags["System"]
       ingress_name       = local.argowf_ingress
       ingress_certs_arn  = var.certificate
       ingress_ssl_policy = local.ingress_ssl_policy
