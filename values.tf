@@ -46,7 +46,7 @@ locals {
   }
   # __________MOVE TO ArgoCD__________
   aws_load_balancer_controller = {
-    version = "1.7.2"
+    version = "1.17.0"
   }
   cluster_proportional_autoscaler = {
     version = "1.1.0"
