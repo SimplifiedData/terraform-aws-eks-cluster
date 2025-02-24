@@ -187,7 +187,7 @@ variable "aws_load_balancer_controller" {
 }
 
 variable "enable_alb_controller" {
-  default = false
+  default = true
 }
 
 variable "argocd_version" {
