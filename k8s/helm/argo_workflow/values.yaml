@@ -3,7 +3,6 @@ controller:
     format: json
     level: error
   nodeSelector:
-    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
@@ -16,7 +15,6 @@ server:
     format: json
     level: error
   nodeSelector:
-    system: ${tags_system}
     manage-team: devops
     namespace: kube-system
   tolerations:
