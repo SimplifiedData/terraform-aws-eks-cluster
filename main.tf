@@ -26,7 +26,7 @@ module "eks" {
   create_cluster_security_group = var.enable_node_group == true ? true : false
   create_node_security_group    = var.enable_node_group == true ? true : false
 
-  eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : {}
+  eks_managed_node_groups = var.enable_node_group ? var.manage_node_group : tomap({})
 
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
