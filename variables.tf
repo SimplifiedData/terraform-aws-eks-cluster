@@ -219,6 +219,10 @@ variable "manage_node_group" {
   type    = any
   default = {}
 }
+
+variable "enable_cluster_proportional_autoscaler" {
+  default = false
+}
 # variable "aws_auth_fargate_profile_pod_execution_role_arns" {
 #   description = "List of Fargate profile pod execution role ARNs to add to the aws-auth configmap"
 #   type        = list(string)

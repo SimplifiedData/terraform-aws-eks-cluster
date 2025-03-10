@@ -216,11 +216,11 @@ module "eks_blueprints_addons_system" {
     })])
   }
   # [--]
-  # enable_cluster_proportional_autoscaler = var.enable_eksaddons
-  # cluster_proportional_autoscaler = {
-  #   chart_version = local.cluster_proportional_autoscaler["version"]
-  #   values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
-  # }
+  enable_cluster_proportional_autoscaler = var.enable_cluster_proportional_autoscaler
+  cluster_proportional_autoscaler = {
+    chart_version = local.cluster_proportional_autoscaler["version"]
+    values        = [templatefile("${path.module}/k8s/helm/cluster_proportional_autoscaler/values.yaml", {})]
+  }
   ##==========================================================================================##
   depends_on = [kubectl_manifest.default_provisioner, kubectl_manifest.default_nodetemplate]
 }
