@@ -220,7 +220,7 @@ variable "manage_node_group" {
   default = {}
 }
 
-variable "enable_cluster_proportional_autoscaler" {
+variable "enable_autoscaler" {
   default = false
 }
 # variable "aws_auth_fargate_profile_pod_execution_role_arns" {
