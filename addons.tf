@@ -226,7 +226,7 @@ module "eks_blueprints_addons_system" {
 }
 
 module "ebs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
   role_name             = "${module.eks.cluster_name}-ebs-csi"
   attach_ebs_csi_policy = true
