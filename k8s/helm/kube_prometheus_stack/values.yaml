@@ -114,9 +114,9 @@ grafana:
   dashboards:
     default:
       capacity-dashboard:
-        url: https://karpenter.sh/v0.36/getting-started/getting-started-with-karpenter/karpenter-capacity-dashboard.json
+        url: https://karpenter.sh/v1.0/getting-started/getting-started-with-karpenter/karpenter-capacity-dashboard.json
       performance-dashboard:
-        url: https://karpenter.sh/v0.36/getting-started/getting-started-with-karpenter/karpenter-performance-dashboard.json
+        url: https://karpenter.sh/v1.0/getting-started/getting-started-with-karpenter/karpenter-performance-dashboard.json
   datasources:
     datasources.yaml:
       apiVersion: 1
