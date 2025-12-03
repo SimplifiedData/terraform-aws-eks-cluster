@@ -49,6 +49,17 @@ prometheus:
     - key: "devopsMangement"
       operator: "Exists"
       effect: "NoSchedule"
+    persistentVolumeClaimRetentionPolicy:
+      whenDeleted: Retain
+      whenScaled: Retain
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp2
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
 
 prometheusOperator:
   nodeSelector:
