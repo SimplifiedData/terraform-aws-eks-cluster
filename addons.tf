@@ -130,25 +130,25 @@ module "eks_blueprints_addons_system" {
     coredns = {
       configuration_values = jsonencode({
         # computeType = "Fargate"
-        nodeSelector = {
-          "kubernetes.io/arch" = "arm64"
-          system               = var.tags["System"]
-          manage-team          = "devops"
-          namespace            = "kube-system"
-        }
-        tolerations = [
-          {
-            key      = "devopsMangement"
-            operator = "Exists"
-            effect   = "NoSchedule"
-          },
-        ]
+        # nodeSelector = {
+        #   "kubernetes.io/arch" = "arm64"
+        #   system               = var.tags["System"]
+        #   manage-team          = "devops"
+        #   namespace            = "kube-system"
+        # }
+        # tolerations = [
+        #   {
+        #     key      = "devopsMangement"
+        #     operator = "Exists"
+        #     effect   = "NoSchedule"
+        #   },
+        # ]
         resources = {
-          limits = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
+          # limits = {
+          #   cpu = "0.25"
+          #   # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
+          #   memory = "256M"
+          # }
           requests = {
             cpu = "0.25"
             # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the request/limit to ensure we can fit within that task
