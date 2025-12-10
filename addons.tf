@@ -161,6 +161,26 @@ module "eks_blueprints_addons_system" {
       service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
       configuration_values = jsonencode({
         controller = {
+          affinity = {
+            nodeAffinity = {
+              requiredDuringSchedulingIgnoredDuringExecution = {
+                nodeSelectorTerms = [{
+                  matchExpressions = [
+                    {
+                      key      = "type"
+                      operator = "NotIn"
+                      values   = ["virtual-kubelet"]
+                    },
+                    {
+                      key      = "eks.amazonaws.com/compute-type"
+                      operator = "NotIn"
+                      values   = ["fargate"]
+                    }
+                  ]
+                }]
+              }
+            }
+          }
           nodeSelector = {
             "kubernetes.io/arch" = "arm64"
             system               = var.tags["System"]
